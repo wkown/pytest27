@@ -18,14 +18,22 @@ def is_palindrome(num):
             if (str_num[i] != str_num[-(i + 1)]):
                 return False
         return True
-
+def is_palindrome2(num):
+    '''一个新的判断是否为回文数的方法'''
+    s = str(num)
+    return s == s[::-1]
 
 if __name__ == '__main__':
+    start=1
+    end = 10000000
+    print 'first:'
     t = time.clock()
-    x = 1
-    y = 100000000000000
-    sqr_x = int(math.sqrt(x))
-    sqr_y = int(math.sqrt(y))
-    aa = [{x: x * x} for x in xrange(sqr_x, sqr_y) if is_palindrome(x) and is_palindrome(x * x)]
+    aa = [{x: x * x} for x in xrange(start,end) if is_palindrome(x) and is_palindrome(x * x)]
     print aa
     print time.clock() - t
+
+    print 'secend'
+    t=time.clock()
+    bb=[{x:x*x} for x in xrange(start,end) if is_palindrome2(x) and is_palindrome2(x*x)]
+    print bb
+    print 'time:',time.clock()-t

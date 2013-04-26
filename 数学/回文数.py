@@ -1,16 +1,16 @@
-# coding=gbk
+# coding=utf8
 __author__ = 'weijie'
 '''
-"»ØÎÄÊı"ÊÇÒ»ÖÖÊı×Ö¡£Èç£º98789, Õâ¸öÊı×ÖÕı¶ÁÊÇ98789,µ¹¶ÁÒ²ÊÇ98789,Õı¶Áµ¹¶ÁÒ»Ñù£¬ËùÒÔÕâ¸öÊı×Ö¾ÍÊÇ»ØÎÄÊı¡£
-½Å±¾À´Ô´:http://www.oschina.net/code/snippet_554209_20748
-¡¶rubyÌ«ÂıÁË¡·:www.oschina.net/translate/ruby-is-too-slow-for-programming-competitions
+"å›æ–‡æ•°"æ˜¯ä¸€ç§æ•°å­—ã€‚å¦‚ï¼š98789, è¿™ä¸ªæ•°å­—æ­£è¯»æ˜¯98789,å€’è¯»ä¹Ÿæ˜¯98789,æ­£è¯»å€’è¯»ä¸€æ ·ï¼Œæ‰€ä»¥è¿™ä¸ªæ•°å­—å°±æ˜¯å›æ–‡æ•°ã€‚
+è„šæœ¬æ¥æº:http://www.oschina.net/code/snippet_554209_20748
+ã€Šrubyå¤ªæ…¢äº†ã€‹:www.oschina.net/translate/ruby-is-too-slow-for-programming-competitions
 '''
 import math
 import time
 
 
 def is_palindrome(num):
-    '''ÅĞ¶ÏÊÇ·ñÎª»ØÎÄÊı'''
+    '''åˆ¤æ–­æ˜¯å¦ä¸ºå›æ–‡æ•°'''
     str_num = str(num)
     if (str_num[0] == str_num[-1]):
         i_len = len(str_num) / 2
@@ -19,21 +19,43 @@ def is_palindrome(num):
                 return False
         return True
 def is_palindrome2(num):
-    '''Ò»¸öĞÂµÄÅĞ¶ÏÊÇ·ñÎª»ØÎÄÊıµÄ·½·¨'''
+    '''ä¸€ä¸ªæ–°çš„åˆ¤æ–­æ˜¯å¦ä¸ºå›æ–‡æ•°çš„æ–¹æ³•'''
     s = str(num)
     return s == s[::-1]
+def is_palindrome3(num):
+    '''åˆ¤æ–­æ˜¯å¦ä¸ºå›æ–‡æ•°çš„æ–¹æ³• is_palindrome2çš„æ”¹è¿›ç‰ˆ'''
+    s = str(num)
+    if (s[0] == s[-1]): #ä¿®æ”¹ä¹‹åæ•ˆç‡æ˜æ˜¾æå‡
+        return s == s[::-1]
+    return False
+
+
+def filterNum(n):
+    '''å¢åŠ filteråæ²¡æœ‰è§åˆ°æ•ˆæœå•Šï¼
+    æ¥æºç½‘å€ï¼šhttp://www.oschina.net/code/snippet_1026590_20768
+    '''
+    s = str(n)
+    return s == s[::-1] if s[-1] in '123' else False
 
 if __name__ == '__main__':
     start=1
-    end = 10000000
-    print 'first:'
+    end = 100000000
+    print 'ç¬¬ä¸€:'
     t = time.clock()
-    aa = [{x: x * x} for x in xrange(start,end) if is_palindrome(x) and is_palindrome(x * x)]
-    print aa
+    print [(x, x * x) for x in xrange(start,end) if is_palindrome(x) and is_palindrome(x * x)]
     print time.clock() - t
 
-    print 'secend'
+    print 'ç¬¬äºŒ:'
     t=time.clock()
-    bb=[{x:x*x} for x in xrange(start,end) if is_palindrome2(x) and is_palindrome2(x*x)]
-    print bb
+    print [(x, x * x) for x in xrange(start,end) if is_palindrome2(x) and is_palindrome2(x*x)]
+    print 'time:',time.clock()-t
+
+    print 'ç¬¬ä¸‰:'
+    t=time.clock()
+    print [(x, x * x) for x in xrange(start,end) if is_palindrome3(x) and is_palindrome3(x*x)]
+    print 'time:',time.clock()-t
+
+    print 'ç¬¬å››:'
+    t=time.clock()
+    print [(x, x * x) for x in xrange(start,end) if filterNum(x) and is_palindrome3(x*x)]
     print 'time:',time.clock()-t

@@ -3,20 +3,18 @@ __author__ = 'weijie'
 '''
 使用python登录人人网并发表状态
 ======================================
-把Email和password改成你的人人账号
+根据提示输入Email和password
 此程序根据 http://www.oschina.net/code/snippet_148170_10661 内容改编
 来源网址：http://www.oschina.net/code/snippet_946076_17870
 ======================================
 '''
-from sgmllib import SGMLParser
-import sys, urllib2, urllib, cookielib
+import urllib2
+import urllib
+import cookielib
 import datetime
-import time
 
-
-class spider(SGMLParser):
+class spider:
     def __init__(self, email, password):
-        SGMLParser.__init__(self)
         self.h3 = False
         self.h3_is_ready = False
         self.div = False

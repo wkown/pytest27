@@ -63,7 +63,7 @@ insertRows = (
  'pname': u'Lenovo/\u8054\u60f3 U310-IFI', 'commrate': 0.0,
  'icon': u'http://img03.taobaocdn.com/bao/uploaded/i3/T1pg64XiJjXXXtGCU8_101631.jpg_210x210.jpg', 'click': 0L,
  'totalnum': 0L, 'purl': u''},
-{'status': 0, 'auctionid': 0L, 'total_comm': 0L, 'catid': 4L, 'commission': 0.0, 'url': u'', 'bid': 0.0, 'artnum': None,
+{'status': 0, 'auctionid': 100L, 'total_comm': 0L, 'catid': 4L, 'commission': 0.0, 'url': u'', 'bid': 0.0, 'artnum': None,
  'modified': 1369209385L, 'purl_md5': u'', 'buyclick': 0L, 'url_md5': u'', 'dateline': 1369118753L,
  'pname': u'\u6d4b\u8bd5\u4ea7\u54c1\u5206\u7c7b', 'commrate': 0.0, 'icon': u'', 'click': 0L, 'totalnum': 0L,
  'purl': u''})
@@ -80,7 +80,11 @@ with con:
             if vType in numType:
                 v = str(v)
             if vType is types.NoneType:
-                v = u'\'\''
+
+                if k is 'artnum':
+                    v = u'0'
+                else:
+                    v = u'\'\''
             if vType is types.UnicodeType:
                 v = u'\'' + v + u'\''
                 v.encode('utf8')
@@ -89,4 +93,5 @@ with con:
             conj = u','
         values += u');'
         query = u'INSERT INTO product(' + column + ') '+ values
+        print '\n', query, '\n'
         cur.execute(query)

@@ -43,11 +43,10 @@ class Browser:
 
         self.proxy = None
 
-    def setProxy(self,):
-        """设置代理"""
-        self.proxy = urllib2.ProxyHandler({'http': '127.0.0.1:8087'})
+    def setProxy(self, proxy='127.0.0.1:8087'):
+        """设置http代理,address:port"""
+        self.proxy = urllib2.ProxyHandler({'http': proxy})
         self.urlOpener.add_handler(self.proxy)
-        urllib2.install_opener(self.urlOpener)
 
     def submitForm(self, url=None, fields={}, headers={}):
         """提交一个表单,并返回服务器的相应页面"""

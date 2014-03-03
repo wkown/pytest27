@@ -55,7 +55,7 @@ class Encoding:
 
 if __name__ == '__main__':
     obj = Encoding()
-    print u'请输入文件类型：'
+    print u'请输入文件类型（如php或.php)：'
     obj.setExt(raw_input())
     print u'请输入文件原始编码：'
     obj.setSRC(raw_input())

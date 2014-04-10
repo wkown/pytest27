@@ -26,21 +26,9 @@ class MyThread(QtCore.QThread):
         subprocess.call(['arp', '-d'], shell=True, stdout=open('NUL', 'w'), stderr=subprocess.STDOUT)
         # print('Pinging  ' + host + u', Please waiting...')
         self.trigger.emit('Pinging  ' + host + u', Please waiting...\n')
-        for i in range(70):
-            returncode = subprocess.call('ping -n 1 -w 1 %s' % host, shell = True, stdout = open('NUL', 'w'), \
-                                         stderr = subprocess.STDOUT)
-            if returncode != 0 :
-                self.trigger.emit('.')
-                # sys.stdout.write('.')
-                # sys.stdout.flush()
-                time.sleep(1)
-                continue
-            else:
-                # print('OK')
-                self.trigger.emit('OK\n')
-                return
-        # print(u'\t\n\nCannot connect ' + host +  '!')
-        self.trigger.emit(u'\t\n\nCannot connect ' + host +  '!\n')
+        p = subprocess.Popen('ping -n 4 -w 1 %s' % host, stdin = subprocess.PIPE,
+                                 stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+        self.trigger.emit(p.stdout.read().decode('gbk'))
 
 
 

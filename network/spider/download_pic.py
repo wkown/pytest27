@@ -13,7 +13,7 @@ except Exception, e:
     # print e
     #在windows中打开中文目录需要将字符集转换为gbk
     os.chdir(save_path.decode('utf-8').encode('gbk'))
-print os.getcwd()
+print os.getcwd().decode('gbk')
 
 count = int(raw_input('filename index:'))
 while 1:

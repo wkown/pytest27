@@ -23,7 +23,7 @@ while 1:
     f = open(filename, 'wb')
     f.write(urllib.urlopen(url).read())
     f.close()
-    print 'the new file %s was saved:' % filename
+    print 'the file %s was saved' % filename
     count += 1
 
 if __name__ == "__main__":

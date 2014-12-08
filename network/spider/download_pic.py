@@ -17,14 +17,18 @@ print os.getcwd().decode('gbk')
 
 count = int(raw_input('filename index:'))
 while 1:
-    filename = '%04d.jpg' % count
-    print 'the new file is: %s' % filename
-    url = raw_input('pic url:')
-    f = open(filename, 'wb')
-    f.write(urllib.urlopen(url).read())
-    f.close()
-    print 'the file %s was saved' % filename
-    count += 1
+    try:
+        filename = '%04d' % count
+        print 'the new file is: %s' % filename
+        url = raw_input('pic url:')
+        ext = url[url.rfind('.'):]
+        f = open(filename + ext, 'wb')
+        f.write(urllib.urlopen(url).read())
+        f.close()
+        print 'the file %s was saved' % filename
+        count += 1
+    except Exception, e:
+        pass
 
 if __name__ == "__main__":
     pass

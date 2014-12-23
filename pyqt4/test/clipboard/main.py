@@ -21,6 +21,13 @@ class Widget(QtGui.QWidget):
 
     def getClipBoard(self):
         text = self.clipboard.text()
+        lenoftext = len(text)
+        image = self.clipboard.image()
+        image_isNull= image.isNull()
+        if not image_isNull:
+            image_format= image.format()
+        mimeData = self.clipboard.mimeData()
+        mimeText = mimeData.text()
         print type(text)
         print text
         self.ui.textEdit.setText(text)

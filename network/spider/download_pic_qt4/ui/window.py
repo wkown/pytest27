@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'window.ui'
+# Form implementation generated from reading ui file 'F:\python-project\pytest27\network\spider\download_pic_qt4\ui\window.ui'
 #
-# Created: Tue Dec 23 15:01:48 2014
-#      by: PyQt4 UI code generator 4.11.3
+# Created: Tue Dec 23 22:10:57 2014
+#      by: PyQt4 UI code generator 4.11.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -41,6 +41,9 @@ class Ui_Form(object):
         self.save_path_edit = QtGui.QLineEdit(self.verticalLayoutWidget)
         self.save_path_edit.setObjectName(_fromUtf8("save_path_edit"))
         self.horizontalLayout.addWidget(self.save_path_edit)
+        self.select_dirB = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.select_dirB.setObjectName(_fromUtf8("select_dirB"))
+        self.horizontalLayout.addWidget(self.select_dirB)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
@@ -73,6 +76,7 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "保存图片", None))
         self.label.setText(_translate("Form", "目标目录", None))
+        self.select_dirB.setText(_translate("Form", "选择目录", None))
         self.label_2.setText(_translate("Form", "图片地址", None))
         self.label_3.setText(_translate("Form", "图片索引", None))
         self.saveB.setText(_translate("Form", "保存", None))

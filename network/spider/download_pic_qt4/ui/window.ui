@@ -35,6 +35,13 @@
       <item>
        <widget class="QLineEdit" name="save_path_edit"/>
       </item>
+      <item>
+       <widget class="QPushButton" name="select_dirB">
+        <property name="text">
+         <string>选择目录</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>

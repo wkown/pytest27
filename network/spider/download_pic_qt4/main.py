@@ -18,6 +18,7 @@ class Widget(QtGui.QWidget):
         self.ui.setupUi(self)
         self.clipboard = QtGui.QApplication.clipboard()
         QObject.connect(self.ui.saveB, SIGNAL('clicked()'), self.save_pic)
+        QObject.connect(self.ui.select_dirB, SIGNAL('clicked()'), self.select_dir)
 
     def save_pic(self):
         save_path = self.ui.save_path_edit.text()
@@ -59,6 +60,12 @@ class Widget(QtGui.QWidget):
             self.ui.textEdit.append('the file %s was saved' % filename)
             count += 1
             self.ui.count_edit.setText(str(count))
+
+    def select_dir(self):
+        selector = QtGui.QFileDialog.getExistingDirectory(self)
+        print unicode(selector)
+        self.ui.save_path_edit.setText(selector)
+
 
 
 if __name__ == "__main__":

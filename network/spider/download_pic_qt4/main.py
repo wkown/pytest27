@@ -20,34 +20,45 @@ class Widget(QtGui.QWidget):
         QObject.connect(self.ui.saveB, SIGNAL('clicked()'), self.save_pic)
 
     def save_pic(self):
-        url = self.ui.pic_url_edit.text()
-        if len(url) == 0:
-            url = self.clipboard.text()
-        url=str(url)
-        count = int(str(self.ui.count_edit.text()))
-        if count <= 0:
-            count = 1
-
         save_path = self.ui.save_path_edit.text()
         save_path = unicode(save_path)
         if len(save_path) == 0:
             save_path = os.getcwd()
-        try:
-            filename = '%s/%04d' % (save_path, count)
-            print 'the new file is: %s' % filename
-            self.ui.textEdit.append('the new file is: %s' % filename)
-            ext = url[url.rfind('.'):]
-            f = open(filename.encode('gbk') + ext, 'wb')
-            f.write(urllib.urlopen(url).read())
-            f.close()
+        count = int(str(self.ui.count_edit.text()))
+        if count <= 0:
+            count = 1
+
+        filename = '%s/%04d' % (save_path, count)
+        print 'the new file is: %s' % filename
+        self.ui.textEdit.append('the new file is: %s' % filename)
+
+        url = self.ui.pic_url_edit.text()
+        if len(url) == 0:
+            url = self.clipboard.text()
+
+        flag = False
+        if len(url) == 0:
+            image = self.clipboard.image()
+            if not image.isNull():
+                image.save(filename + '.jpg', 'JPG')
+                flag = True
+        else:
+            url = str(url)
+            try:
+                ext = url[url.rfind('.'):]
+                f = open(filename.encode('gbk') + ext, 'wb')
+                f.write(urllib.urlopen(url).read())
+                f.close()
+                flag = True
+            except Exception, e:
+                print e
+                self.ui.textEdit.append('the file %s was saved' % filename)
+                pass
+        if flag:
             print 'the file %s was saved' % filename
             self.ui.textEdit.append('the file %s was saved' % filename)
             count += 1
             self.ui.count_edit.setText(str(count))
-        except Exception, e:
-            print e
-            self.ui.textEdit.append('the file %s was saved' % filename)
-            pass
 
 
 if __name__ == "__main__":

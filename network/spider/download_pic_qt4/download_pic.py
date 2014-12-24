@@ -53,7 +53,7 @@ class Widget(QtGui.QWidget):
                 flag = True
             except Exception, e:
                 print e
-                self.ui.textEdit.append('the file %s was saved' % filename)
+                self.ui.textEdit.append(e)
                 pass
         if flag:
             print 'the file %s was saved' % filename

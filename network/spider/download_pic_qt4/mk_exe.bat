@@ -1,0 +1,1 @@
+python %PYINSTALLER%\pyinstaller.py -D -w --clean --icon=0033.ico download_pic.py

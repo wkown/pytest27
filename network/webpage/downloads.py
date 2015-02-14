@@ -11,10 +11,10 @@ import os
 from urlparse import urlparse
 
 pattern = {
-    'js': re.compile('<script.*?src="(.*?)".*?></script>', re.IGNORECASE),
-    'css': re.compile('<link.*?href="(.*?)".*?>', re.IGNORECASE),
-    'page_image': re.compile('<img.*?src="(.*?)".*?>', re.IGNORECASE),
-    'css_image': re.compile('url\((.*?)\)', re.IGNORECASE),
+    'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?></script>', re.IGNORECASE),
+    'css': re.compile(r'<link.*?href=[\'\"](.*?)[\'\"].*?>', re.IGNORECASE),
+    'page_image': re.compile(r'<img.*?src=[\'\"](.*?)[\'\"].*?>', re.IGNORECASE),
+    'css_image': re.compile(r'url\([\'\"]?(.*?)[\'\"]?\)', re.IGNORECASE),
 }
 dirs = {'js': 'js',
         'css': 'css',
@@ -31,11 +31,11 @@ def wk_basename(v):
     :param v:
     :return:
     """
-    filename = os.path.basename(v.trim())
+    filename = os.path.basename(v.strip())
 
     pos = filename.find('?')
-    if (pos) != False:
-        filename = filename[0, pos]
+    if (pos) != -1:
+        filename = filename[0: pos]
     return filename
 
 
@@ -50,7 +50,7 @@ def real_url(uri, base_url=''):
         return uri
 
     url_info = urlparse(base_url)
-    root_path = '%s://%s' % (url_info['scheme'], url_info['netloc'])
+    root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
     if uri[0] == '/':
         uri = root_path + uri
     elif uri == '.':
@@ -73,7 +73,7 @@ def download_filse(file_list, dir, base_url=''):
         os.mkdir(dir)
 
     for v in file_list:
-        filename = wk_basename(v.trim());
+        filename = wk_basename(v.strip())
         print "%s_filename:%s<br>\n" % (dir, filename)
         download_file(dir + '/' + filename, v, base_url)
 
@@ -86,7 +86,7 @@ def download_file(filename, url, base_url=''):
     :param base_url:
     :return:
     """
-    url = url.trim().replace('\'', '').replace('"', '')
+    url = url.strip().replace('\'', '').replace('"', '')
     url = real_url(url, base_url)
 
     print "download: %s <br>\n" % url
@@ -100,11 +100,34 @@ def file_put_contents(filename, content):
 
 
 def file_get_contents(url):
-    return urllib.urlopen(url).read()
+    if url.find('http://') != -1:
+        return urllib.urlopen(url).read()
+    f = open(url, 'rb')
+    content = f.read()
+    f.close()
+    return content
+
+
+def replace_source_file_path(matchObj):
+    match = matchObj.group(1)
+    if not match:
+        return ''
+    return matchObj.group(0).replace(match, dirs[k] + '/' + wk_basename(match))
+
+
+def replace_inner_source_file_path(matchObj):
+    match = matchObj.group(1)
+    if not match:
+        return ''
+    return matchObj.group(0).replace(match, dirs[k] + '/' + wk_basename(match))
 
 
 if __name__ == "__main__":
-    url = 'http://www.273.cn/mobile/#'
+    url = 'http://www.273.cn/mobile'
+
+    if not os.path.isdir('html'):
+        os.mkdir('html')
+    os.chdir('html');
 
     url_info = urlparse(url)
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
@@ -123,6 +146,22 @@ if __name__ == "__main__":
 
     content = file_get_contents(url)
     for k, v in pattern.items():
-        matches = v.findall(content)
-        print matches
+        files1 = v.findall(content)
+        print files1
+        if not files1:
+            continue
 
+        download_filse(files1, dirs[k], base_url)
+        # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
+        page_content = v.sub(replace_source_file_path, page_content)
+
+        if k == 'css':  #如果是css 还要下载css中引用的文件
+            for css_file in files1:
+                css_content = file_get_contents('css/'+wk_basename(css_file))
+                css_matches = inner_files['css']['pattern'].findall(css_content)
+                if css_matches:
+                    download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
+                    css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
+                    file_put_contents('css/'+wk_basename(css_file), css_content)
+
+    file_put_contents(base_name, page_content)

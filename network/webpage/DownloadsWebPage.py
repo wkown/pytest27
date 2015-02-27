@@ -1,14 +1,15 @@
-# -*- coding:utf-8 -*-
+# -*- coding:gbk -*-
 __author__ = 'walkskyer'
 """
-ä¸‹è½½æ•´ä¸ªç½‘é¡µèµ„æºæ–‡ä»¶åŠç»“æ„
-ç§»æ¤è‡ªphpè„šæœ¬
+ÏÂÔØÕû¸öÍøÒ³×ÊÔ´ÎÄ¼ş¼°½á¹¹
+ÒÆÖ²×Ôphp½Å±¾
 20150214
 """
 import re
 import urllib
 import os
 from urlparse import urlparse
+import sys
 
 pattern = {
     'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?></script>', re.IGNORECASE),
@@ -27,7 +28,7 @@ inner_files = {'css': {'pattern': re.compile('url\([\'\"]?(.*?)[\'\"]?\)', re.IG
 
 def wk_basename(v):
     """
-    è·å–æ–‡ä»¶å
+    »ñÈ¡ÎÄ¼şÃû
     :param v:
     :return:
     """
@@ -41,7 +42,7 @@ def wk_basename(v):
 
 def real_url(uri, base_url=''):
     """
-    è¿”å›çœŸå®çš„url
+    ·µ»ØÕæÊµµÄurl
     :param uri:
     :param base_url:
     :return:
@@ -62,14 +63,14 @@ def real_url(uri, base_url=''):
 
 def download_filse(file_list, dir, base_url=''):
     """
-    ä¸‹è½½æ–‡ä»¶åˆ—è¡¨
+    ÏÂÔØÎÄ¼şÁĞ±í
     :param file_list:
     :param dir:
     :param base_url:
     :return:
     """
     if not os.path.isdir(dir):
-        print 'curr dir: %s and I will make dirï¼š %s<br>\n' % (os.getcwd(), dir)
+        print 'curr dir: %s and I will make dir£º %s<br>\n' % (os.getcwd(), dir)
         os.mkdir(dir)
 
     for v in file_list:
@@ -80,7 +81,7 @@ def download_filse(file_list, dir, base_url=''):
 
 def download_file(filename, url, base_url=''):
     """
-    ä¸‹è½½æ–‡ä»¶
+    ÏÂÔØÎÄ¼ş
     :param filename:
     :param url:
     :param base_url:
@@ -94,12 +95,23 @@ def download_file(filename, url, base_url=''):
 
 
 def file_put_contents(filename, content):
+    """
+    write something to a file
+    :param filename:
+    :param content:
+    :return:
+    """
     f = open(filename, 'wb')
     f.write(content)
     f.close()
 
 
 def file_get_contents(url):
+    """
+    read the file content
+    :param url:
+    :return:
+    """
     if url.find('http://') != -1:
         return urllib.urlopen(url).read()
     f = open(url, 'rb')
@@ -109,6 +121,11 @@ def file_get_contents(url):
 
 
 def replace_source_file_path(matchObj):
+    """
+    Ìæ»»
+    :param matchObj:
+    :return:
+    """
     match = matchObj.group(1)
     if not match:
         return ''
@@ -119,15 +136,25 @@ def replace_inner_source_file_path(matchObj):
     match = matchObj.group(1)
     if not match:
         return ''
-    return matchObj.group(0).replace(match, dirs[k] + '/' + wk_basename(match))
+    return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_basename(match))
 
 
 if __name__ == "__main__":
-    url = 'http://www.273.cn/mobile'
+    # url = 'http://www.273.cn/mobile'
+
+    url = ''
+    if len(sys.argv) <= 1:
+        while len(url) <= 0:
+            url = raw_input('please input a url:')
+
+    if url.find(r'://') == -1:
+        url = 'http://%s' % url
+
+    print  'We will download the page use this url:%s' % url
 
     if not os.path.isdir('html'):
         os.mkdir('html')
-    os.chdir('html');
+    os.chdir('html')
 
     url_info = urlparse(url)
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
@@ -155,13 +182,13 @@ if __name__ == "__main__":
         # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
         page_content = v.sub(replace_source_file_path, page_content)
 
-        if k == 'css':  #å¦‚æœæ˜¯css è¿˜è¦ä¸‹è½½cssä¸­å¼•ç”¨çš„æ–‡ä»¶
+        if k == 'css':  #Èç¹ûÊÇcss »¹ÒªÏÂÔØcssÖĞÒıÓÃµÄÎÄ¼ş
             for css_file in files1:
-                css_content = file_get_contents('css/'+wk_basename(css_file))
+                css_content = file_get_contents('css/' + wk_basename(css_file))
                 css_matches = inner_files['css']['pattern'].findall(css_content)
                 if css_matches:
                     download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
                     css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
-                    file_put_contents('css/'+wk_basename(css_file), css_content)
+                    file_put_contents('css/' + wk_basename(css_file), css_content)
 
     file_put_contents(base_name, page_content)

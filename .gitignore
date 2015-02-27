@@ -29,6 +29,8 @@ nosetests.xml
 
 # Translations
 *.mo
+#pyinstaller
+*.spec
 
 # Mr Developer
 .mr.developer.cfg

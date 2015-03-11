@@ -28,4 +28,6 @@ def two_value(filename):
     #big = im_orig.resize((1000, 500), Image.NEAREST)
 
 if __name__ == "__main__":
-    two_value('../pic/1.jpg')
+    while True:
+        file_name=raw_input('filename:')
+        two_value('../pic/%s.jpg' % file_name)

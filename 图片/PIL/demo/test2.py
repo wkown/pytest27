@@ -22,6 +22,8 @@ if __name__ == "__main__":
                 flagx[x] += 1
     print flagx
 
+
+
     result = list()
     for i in range(img.size[0]):
         if flagx[i] > 0 and flagx[i - 1] <= 0:
@@ -40,3 +42,11 @@ if __name__ == "__main__":
                 if flagy[j] > 0 and flagy[j + 1] <= 0:
                     result.append([tmp, i, ttmp + 1, j + 1])
     print result
+
+    for i in result:
+        x1,x2,y1,y2=i
+        if (x2-x1)>7:
+            x3=x1+8
+            img.crop((x3, y1-1, x2+1, y2)).convert('RGB').save("font/%d.jpg" % x3)
+            x2=x3-1
+        img.crop((x1, y1-1, x2+1, y2)).convert('RGB').save("font/%d.jpg" % x1)

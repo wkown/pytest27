@@ -18,6 +18,7 @@ if __name__ == "__main__":
     #横坐标上的像素分布
     for x in range(img.size[0]):
         for y in range(img.size[1]):
+            v=pix[x, y]
             if pix[x, y][0] < 90:
                 flagx[x] += 1
     print flagx
@@ -28,7 +29,7 @@ if __name__ == "__main__":
     for i in range(img.size[0]):
         if flagx[i] > 0 and flagx[i - 1] <= 0:
             tmp = i  #记录0->n的坐标
-        if flagx[i] > 0 and flagx[i + 1] <= 0:
+        if flagx[i] > 0 and ( len(flagx)==(i+1) or flagx[i + 1] <= 0):
             #完成一个字符的横坐标扫描，针对这段用同样的方法扫描纵坐标
             flagy = [0 for x in range(img.size[1])]
             for y in range(img.size[1]):

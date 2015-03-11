@@ -5,7 +5,7 @@ python图像处理之二值去噪
 来源:http://blog.feshine.net/technology/1164.html
 """
 from PIL import Image
-def two_value(filename):
+def binary(filename):
     img = Image.open(filename) # 读入图片
     img = img.convert("RGBA")
     pixdata = img.load()
@@ -30,4 +30,4 @@ def two_value(filename):
 if __name__ == "__main__":
     while True:
         file_name=raw_input('filename:')
-        two_value('../pic/%s.jpg' % file_name)
+        binary('../pic/%s.jpg' % file_name)

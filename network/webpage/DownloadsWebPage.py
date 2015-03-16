@@ -47,8 +47,10 @@ def real_url(uri, base_url=''):
     :param base_url:
     :return:
     """
-    if uri.find('//') == False or uri.find('http://') == False:
+    if uri.find('http://') == 0 or uri.find('https://') == 0:
         return uri
+    if uri.find('//') == 0:
+        return 'http:%s' % uri
 
     url_info = urlparse(base_url)
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
@@ -75,13 +77,15 @@ def download_filse(file_list, dir, base_url=''):
 
     for v in file_list:
         filename = wk_basename(v.strip())
+        if filename == '':
+            continue
         print "%s_filename:%s<br>\n" % (dir, filename)
         download_file(dir + '/' + filename, v, base_url)
 
 
 def download_file(filename, url, base_url=''):
     """
-    下载文件
+    下载文件0
     :param filename:
     :param url:
     :param base_url:
@@ -101,6 +105,8 @@ def file_put_contents(filename, content):
     :param content:
     :return:
     """
+    if content is None:
+        return
     f = open(filename, 'wb')
     f.write(content)
     f.close()
@@ -114,6 +120,8 @@ def file_get_contents(url):
     """
     if url.find('http://') != -1:
         return urllib.urlopen(url).read()
+    if not os.path.isfile(url):
+        return
     f = open(url, 'rb')
     content = f.read()
     f.close()
@@ -170,6 +178,9 @@ if __name__ == "__main__":
         base_url = url[0:url.rfind('/')]
         base_name = 'index.html'
 
+    if base_url == 'http:' or base_url == 'http:/':
+        base_url = root_path
+
     page_content = file_get_contents(url)
 
     content = file_get_contents(url)
@@ -183,9 +194,12 @@ if __name__ == "__main__":
         # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
         page_content = v.sub(replace_source_file_path, page_content)
 
-        if k == 'css':  #如果是css 还要下载css中引用的文件
+        if k == 'css':  # 如果是css 还要下载css中引用的文件
             for css_file in files1:
+                print 'css/' + wk_basename(css_file)
                 css_content = file_get_contents('css/' + wk_basename(css_file))
+                if css_content is None:
+                    continue
                 css_matches = inner_files['css']['pattern'].findall(css_content)
                 if css_matches:
                     download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))

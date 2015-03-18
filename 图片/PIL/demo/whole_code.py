@@ -91,6 +91,7 @@ def recognize(img):
         fontMods.append((str(i), Image.open("./font/use/%d.jpg" % i)))
     fontMods.append((str('-'), Image.open("./font/use/%s.jpg" % '-')))
     fontMods.append((str('0'), Image.open("./font/use/%s.jpg" % '0_1')))
+    fontMods.append((str('*'), Image.open("./font/use/%s.jpg" % 'star')))
     result = ""
     font = division(img)
     for i in font:

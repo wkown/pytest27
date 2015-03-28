@@ -70,12 +70,12 @@ def download_filse(file_list, dir, base_url=''):
     :return:
     """
     if not os.path.isdir(dir):
-        print 'curr dir: %s and I will make dir£º %s<br>\n' % (os.getcwd(), dir)
+        print 'curr dir: %s and I will make dir£º %s\n' % (os.getcwd(), dir)
         os.mkdir(dir)
 
     for v in file_list:
         filename = wk_basename(v.strip())
-        print "%s_filename:%s<br>\n" % (dir, filename)
+        print "%s_filename:%s\n" % (dir, filename)
         download_file(dir + '/' + filename, v, base_url)
 
 
@@ -90,7 +90,7 @@ def download_file(filename, url, base_url=''):
     url = url.strip().replace('\'', '').replace('"', '')
     url = real_url(url, base_url)
 
-    print "download: %s <br>\n" % url
+    print "download: %s \n" % url
     file_put_contents(filename, file_get_contents(url))
 
 
@@ -101,7 +101,7 @@ def file_put_contents(filename, content):
     :param content:
     :return:
     """
-    f = open(filename, 'wb')
+    f = open(getCodeStr(filename), 'wb')
     f.write(content)
     f.close()
 
@@ -114,6 +114,9 @@ def file_get_contents(url):
     """
     if url.find('http://') != -1:
         return urllib.urlopen(url).read()
+    if url.find('//') == 0:
+        tmp=urllib.urlopen('http:%s' % url).read()
+        return urllib.urlopen('http:%s' % url).read()
     f = open(url, 'rb')
     content = f.read()
     f.close()
@@ -138,6 +141,38 @@ def replace_inner_source_file_path(matchObj):
         return ''
     return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_basename(match))
 
+def getCodeStr(result):
+    #gb2312
+    try:
+        myResult = result.decode('gb2312').encode('gbk', 'ignore')
+        return myResult
+    except:
+        pass
+        #utf-8
+    try:
+        myResult = result.decode('utf-8').encode('gbk', 'ignore')
+        return myResult
+    except:
+        pass
+
+    #unicode
+    try:
+        myResult = result.encode('gbk', 'ignore')
+        return myResult
+    except:
+        pass
+        #gbk
+    try:
+        myResult = result.decode('gbk').encode('gbk', 'ignore')
+        return myResult
+    except:
+        pass
+        #big5
+    try:
+        myResult = result.decode('big5').encode('gbk', 'ignore')
+        return myResult
+    except:
+        pass
 
 if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'
@@ -172,7 +207,7 @@ if __name__ == "__main__":
 
     page_content = file_get_contents(url)
 
-    content = file_get_contents(url)
+    content = page_content#file_get_contents(url)
     for k, v in pattern.items():
         files1 = v.findall(content)
         print files1

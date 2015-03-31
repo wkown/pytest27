@@ -10,6 +10,7 @@ import urllib
 import os
 from urlparse import urlparse
 import sys
+import time
 
 pattern = {
     'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?></script>', re.IGNORECASE),
@@ -98,7 +99,7 @@ def download_file(filename, url, base_url=''):
     file_put_contents(filename, file_get_contents(url))
 
 
-def file_put_contents(filename, content):
+def file_put_contents(filename, content, mode='wb'):
     """
     write something to a file
     :param filename:
@@ -107,7 +108,7 @@ def file_put_contents(filename, content):
     """
     if content is None:
         return
-    f = open(filename, 'wb')
+    f = open(filename, mode)
     f.write(content)
     f.close()
 
@@ -119,13 +120,28 @@ def file_get_contents(url):
     :return:
     """
     if url.find('http://') != -1:
-        return urllib.urlopen(url).read()
+        try:
+            return urllib.urlopen(url).read()
+        except Exception, e:
+            msg = '下载文件 %s 时报出错误: %s' % (url, e)
+            print "file %s download error: %s" % (url, e)
+            log(msg)
+            return '/* %s */' % msg
     if not os.path.isfile(url):
         return
     f = open(url, 'rb')
     content = f.read()
     f.close()
     return content
+
+
+def log(msg, log_file='download'):
+    if msg is None:
+        return
+    if isinstance(msg, unicode):
+        msg = msg.encode('utf-8', 'ignore')
+
+    return file_put_contents('%s.log' % log_file, "[%s] %s\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), msg), 'ab')
 
 
 def replace_source_file_path(matchObj):
@@ -151,15 +167,20 @@ if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'
     print 'This tools is used to download one page from the online web site to your local host.It will download the page struct ,js,css And images.And powered by walkskyer ^_^'
 
-    url = ''
+    url = target_name = ''
     if len(sys.argv) <= 1:
         while len(url) <= 0:
-            url = raw_input('please input a url:')
+            url = raw_input('please input a url(*):')
 
     if url.find(r'://') == -1:
         url = 'http://%s' % url
 
-    print  'We will download the page use this url:%s' % url
+    if len(sys.argv) <= 2:
+        target_name = raw_input('please input the target name (optional default:index.html):')
+
+    print 'We will download the page use this url:%s' % url
+
+    time.sleep(2)
 
     if not os.path.isdir('html'):
         os.mkdir('html')
@@ -177,6 +198,9 @@ if __name__ == "__main__":
     if ext not in ('html', 'htm', 'php', 'asp', 'jsp', 'aspx'):
         base_url = url[0:url.rfind('/')]
         base_name = 'index.html'
+
+    if target_name:
+        base_name = target_name
 
     if base_url == 'http:' or base_url == 'http:/':
         base_url = root_path

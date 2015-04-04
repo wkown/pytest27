@@ -162,35 +162,35 @@ def replace_inner_source_file_path(matchObj):
         return ''
     return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_basename(match))
 
-def getCodeStr(result):
+def getCodeStr(result, target_charset='gbk'):
     #gb2312
     try:
-        myResult = result.decode('gb2312').encode('gbk', 'ignore')
+        myResult = result.decode('gb2312').encode(target_charset, 'ignore')
         return myResult
     except:
         pass
         #utf-8
     try:
-        myResult = result.decode('utf-8').encode('gbk', 'ignore')
+        myResult = result.decode('utf-8').encode(target_charset, 'ignore')
         return myResult
     except:
         pass
 
     #unicode
     try:
-        myResult = result.encode('gbk', 'ignore')
+        myResult = result.encode(target_charset, 'ignore')
         return myResult
     except:
         pass
         #gbk
     try:
-        myResult = result.decode('gbk').encode('gbk', 'ignore')
+        myResult = result.decode('gbk').encode(target_charset, 'ignore')
         return myResult
     except:
         pass
         #big5
     try:
-        myResult = result.decode('big5').encode('gbk', 'ignore')
+        myResult = result.decode('big5').encode(target_charset, 'ignore')
         return myResult
     except:
         pass
@@ -199,43 +199,57 @@ if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'
     print 'This tools is used to download one page from the online web site to your local host.It will download the page struct ,js,css And images.And powered by walkskyer ^_^'
 
-    url = target_name = ''
+    url = target_name = base_url = ''
     if len(sys.argv) <= 1:
         while len(url) <= 0:
             url = raw_input('please input a url(*):')
 
-    if url.find(r'://') == -1:
-        url = 'http://%s' % url
+
 
     if len(sys.argv) <= 2:
         target_name = raw_input('please input the target name (optional default:index.html):')
 
-    print 'We will download the page use this url:%s' % url
 
-    time.sleep(2)
 
     if not os.path.isdir('html'):
         os.mkdir('html')
     os.chdir('html')
 
-    url_info = urlparse(url)
+    if os.path.isfile(getCodeStr(url)):
+        while len(base_url) <= 0:
+            base_url = raw_input('please input the resource url (To locate the images,css or js file):')
+
+        if base_url.find(r'://') == -1:
+            base_url = 'http://%s' % base_url
+
+        url_info = urlparse(base_url)
+        base_name = os.path.basename(url)
+        url = getCodeStr(url)
+    else:
+        if url.find(r'://') == -1:
+            url = 'http://%s' % url
+        url_info = urlparse(url)
+        base_url = os.path.dirname(url)
+        base_name = os.path.basename(url)
+
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
-    base_url = os.path.dirname(url)
-    base_name = os.path.basename(url)
     pos = int(base_name.find('.'))
     if pos is -1:
         ext = None
     else:
-        ext = base_name[pos + 1]
+        ext = base_name[pos + 1:]
     if ext not in ('html', 'htm', 'php', 'asp', 'jsp', 'aspx'):
         base_url = url[0:url.rfind('/')]
         base_name = 'index.html'
 
+    if base_url == 'http:' or base_url == 'http:/':
+        base_url = root_path
+
     if target_name:
         base_name = target_name
 
-    if base_url == 'http:' or base_url == 'http:/':
-        base_url = root_path
+    print 'We will download the page use this url:%s' % url
+    time.sleep(2)
 
     page_content = file_get_contents(url)
 

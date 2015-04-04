@@ -10,6 +10,7 @@ import urllib
 import os
 from urlparse import urlparse
 import sys
+import time
 
 pattern = {
     'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?></script>', re.IGNORECASE),
@@ -47,8 +48,10 @@ def real_url(uri, base_url=''):
     :param base_url:
     :return:
     """
-    if uri.find('//') == False or uri.find('http://') == False:
+    if uri.find('http://') == 0 or uri.find('https://') == 0:
         return uri
+    if uri.find('//') == 0:
+        return 'http:%s' % uri
 
     url_info = urlparse(base_url)
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
@@ -70,18 +73,20 @@ def download_filse(file_list, dir, base_url=''):
     :return:
     """
     if not os.path.isdir(dir):
-        print 'curr dir: %s and I will make dir： %s\n' % (os.getcwd(), dir)
+        print 'curr dir: %s and I will make dir： %s<br>\n' % (os.getcwd(), dir)
         os.mkdir(dir)
 
     for v in file_list:
         filename = wk_basename(v.strip())
-        print "%s_filename:%s\n" % (dir, filename)
+        if filename == '':
+            continue
+        print "%s_filename:%s<br>\n" % (dir, filename)
         download_file(dir + '/' + filename, v, base_url)
 
 
 def download_file(filename, url, base_url=''):
     """
-    下载文件
+    下载文件0
     :param filename:
     :param url:
     :param base_url:
@@ -90,18 +95,20 @@ def download_file(filename, url, base_url=''):
     url = url.strip().replace('\'', '').replace('"', '')
     url = real_url(url, base_url)
 
-    print "download: %s \n" % url
+    print "download: %s <br>\n" % url
     file_put_contents(filename, file_get_contents(url))
 
 
-def file_put_contents(filename, content):
+def file_put_contents(filename, content, mode='wb'):
     """
     write something to a file
     :param filename:
     :param content:
     :return:
     """
-    f = open(getCodeStr(filename), 'wb')
+    if content is None:
+        return
+    f = open(filename, mode)
     f.write(content)
     f.close()
 
@@ -113,14 +120,28 @@ def file_get_contents(url):
     :return:
     """
     if url.find('http://') != -1:
-        return urllib.urlopen(url).read()
-    if url.find('//') == 0:
-        tmp=urllib.urlopen('http:%s' % url).read()
-        return urllib.urlopen('http:%s' % url).read()
+        try:
+            return urllib.urlopen(url).read()
+        except Exception, e:
+            msg = '下载文件 %s 时报出错误: %s' % (url, e)
+            print "file %s download error: %s" % (url, e)
+            log(msg)
+            return '/* %s */' % msg
+    if not os.path.isfile(url):
+        return
     f = open(url, 'rb')
     content = f.read()
     f.close()
     return content
+
+
+def log(msg, log_file='download'):
+    if msg is None:
+        return
+    if isinstance(msg, unicode):
+        msg = msg.encode('utf-8', 'ignore')
+
+    return file_put_contents('%s.log' % log_file, "[%s] %s\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), msg), 'ab')
 
 
 def replace_source_file_path(matchObj):
@@ -141,52 +162,25 @@ def replace_inner_source_file_path(matchObj):
         return ''
     return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_basename(match))
 
-def getCodeStr(result):
-    #gb2312
-    try:
-        myResult = result.decode('gb2312').encode('gbk', 'ignore')
-        return myResult
-    except:
-        pass
-        #utf-8
-    try:
-        myResult = result.decode('utf-8').encode('gbk', 'ignore')
-        return myResult
-    except:
-        pass
-
-    #unicode
-    try:
-        myResult = result.encode('gbk', 'ignore')
-        return myResult
-    except:
-        pass
-        #gbk
-    try:
-        myResult = result.decode('gbk').encode('gbk', 'ignore')
-        return myResult
-    except:
-        pass
-        #big5
-    try:
-        myResult = result.decode('big5').encode('gbk', 'ignore')
-        return myResult
-    except:
-        pass
 
 if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'
     print 'This tools is used to download one page from the online web site to your local host.It will download the page struct ,js,css And images.And powered by walkskyer ^_^'
 
-    url = ''
+    url = target_name = ''
     if len(sys.argv) <= 1:
         while len(url) <= 0:
-            url = raw_input('please input a url:')
+            url = raw_input('please input a url(*):')
 
     if url.find(r'://') == -1:
         url = 'http://%s' % url
 
-    print  'We will download the page use this url:%s' % url
+    if len(sys.argv) <= 2:
+        target_name = raw_input('please input the target name (optional default:index.html):')
+
+    print 'We will download the page use this url:%s' % url
+
+    time.sleep(2)
 
     if not os.path.isdir('html'):
         os.mkdir('html')
@@ -205,9 +199,15 @@ if __name__ == "__main__":
         base_url = url[0:url.rfind('/')]
         base_name = 'index.html'
 
+    if target_name:
+        base_name = target_name
+
+    if base_url == 'http:' or base_url == 'http:/':
+        base_url = root_path
+
     page_content = file_get_contents(url)
 
-    content = page_content#file_get_contents(url)
+    content = file_get_contents(url)
     for k, v in pattern.items():
         files1 = v.findall(content)
         print files1
@@ -218,9 +218,12 @@ if __name__ == "__main__":
         # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
         page_content = v.sub(replace_source_file_path, page_content)
 
-        if k == 'css':  #如果是css 还要下载css中引用的文件
+        if k == 'css':  # 如果是css 还要下载css中引用的文件
             for css_file in files1:
+                print 'css/' + wk_basename(css_file)
                 css_content = file_get_contents('css/' + wk_basename(css_file))
+                if css_content is None:
+                    continue
                 css_matches = inner_files['css']['pattern'].findall(css_content)
                 if css_matches:
                     download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))

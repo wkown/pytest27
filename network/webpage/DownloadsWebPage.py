@@ -232,15 +232,16 @@ if __name__ == "__main__":
         base_url = os.path.dirname(url)
         base_name = os.path.basename(url)
 
+        pos = int(base_name.find('.'))
+        if pos is -1:
+            ext = None
+        else:
+            ext = base_name[pos + 1:]
+        if ext not in ('html', 'htm', 'php', 'asp', 'jsp', 'aspx'):
+            base_url = url[0:url.rfind('/')]
+            base_name = 'index.html'
+
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
-    pos = int(base_name.find('.'))
-    if pos is -1:
-        ext = None
-    else:
-        ext = base_name[pos + 1:]
-    if ext not in ('html', 'htm', 'php', 'asp', 'jsp', 'aspx'):
-        base_url = url[0:url.rfind('/')]
-        base_name = 'index.html'
 
     if base_url == 'http:' or base_url == 'http:/':
         base_url = root_path

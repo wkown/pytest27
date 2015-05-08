@@ -55,10 +55,11 @@ def real_url(uri, base_url=''):
 
     url_info = urlparse(base_url)
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
-    if uri[0] == '/':
-        uri = root_path + uri
-    elif uri == '.':
+
+    if uri == '.' or not uri:
         uri = base_url
+    elif uri[0] == '/':
+        uri = root_path + uri
     else:
         uri = base_url + '/' + uri
     return uri

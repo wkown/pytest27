@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 __author__ = 'walkskyer'
 """
-gevent 玩具3 聊天服务器客户端
+gevent 玩具3 聊天服务器 客户端
 """
 import gevent
 from gevent import monkey
-monkey.patch_all()
+#monkey.patch_all()
 from collections import deque
+import socket
 
 
 class Client():
@@ -82,20 +83,21 @@ class Client():
 
 def send_msg(client):
     while True:
+        client.send_all()
         gevent.sleep(0.5)
 
-def insert_msg(client_que):
+def insert_msg(client):
     while True:
         msg = raw_input()
         if msg:
-            for client in client_que:
-                client.msg_append(msg)
-        gevent.sleep(3)
+            client.msg_append(msg)
+        gevent.sleep(0.5)
 
 if __name__ == "__main__":
-    client_que = deque()
-
-    client = Client()
-    client_que.append(client)
-    gevent.spawn(send_msg, client).start()
-    gevent.joinall([gevent.spawn(insert_msg,client_que)])
+    client = Client('sock')
+    client.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.conn.connect(('127.0.0.1', 18888))
+    gevent.joinall([
+        gevent.spawn(send_msg, client),
+        gevent.spawn(insert_msg,client)
+    ])

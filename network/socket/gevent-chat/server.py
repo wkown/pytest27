@@ -5,17 +5,17 @@ gevent 玩具3 聊天服务器 服务器端
 """
 import gevent
 from gevent import monkey
-monkey.patch_all()
+#monkey.patch_all()
 from collections import deque
 import socket
 
 
-class Client():
+class SockClient():
     def __init__(self,name):
-        self.msg_queue = deque()
         self.conn = None
         self.addr = None
         self.name = name
+        self.msg_queue = deque()
 
     def msg_append(self, msg):
         if not msg:
@@ -83,6 +83,7 @@ class Client():
 
 def send_msg(name, client):
     while True:
+        print '%s:%s' % (name, 'I want send')
         if client.msg_len() > 0:
             print '%s:%s' % (name, client.msg_pop())
 
@@ -94,6 +95,7 @@ def send_msg(name, client):
 
 def recv_msg(client, client_que):
     while True:
+        print '%s:%s' % (name, 'I want receive msg')
         msg = client.recv_all()
         if msg:
             print '%s:%s' % (client.name, msg)
@@ -113,17 +115,17 @@ if __name__ == "__main__":
     while True:
         cli_info = server.accept()
         name = 'custom_%s' % count
-        client = Client(name)
+        client = SockClient(name)
         client.conn, client.addr = cli_info
-        print client.addr
+        print '%s:%s' % (name, client.addr)
         data={
             'name':name,
-            'send' : gevent.spawn(send_msg, name, client),
-            'recv' : gevent.spawn(recv_msg, client, client_que),
+            'send' : gevent.Greenlet.spawn(send_msg, name, client),
+            'recv' : gevent.Greenlet.spawn(recv_msg, client, client_que),
             'client' : client
         }
-        data['send'].start()
-        data['recv'].start()
+        data['send'].join()
+        data['recv'].join()
         client_que.append(data)
         del(data)
         del(client)

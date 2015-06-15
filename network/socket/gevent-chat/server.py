@@ -89,23 +89,22 @@ def send_msg(name, client):
 
         if name == 'g1':
             print '*************************************'
-        gevent.sleep(0.5)
+        gevent.sleep()
 
 
 
 def recv_msg(client, client_que):
     while True:
-        print '%s:%s' % (name, 'I want receive msg')
+        print '%s:%s' % (client.name, 'I want receive msg')
         msg = client.recv_all()
         if msg:
             print '%s:%s' % (client.name, msg)
             for cli in client_que:
                 if cli['client'].name != client.name:
                     cli['client'].msg_append("%s:%s" % (client.name, msg))
-        gevent.sleep(0.5)
+        gevent.sleep()
 
-if __name__ == "__main__":
-
+def server_forever():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(('', 18888))
     server.listen(20)
@@ -117,6 +116,7 @@ if __name__ == "__main__":
         name = 'custom_%s' % count
         client = SockClient(name)
         client.conn, client.addr = cli_info
+        client.conn.setblocking(0)
         print '%s:%s' % (name, client.addr)
         data={
             'name':name,
@@ -124,9 +124,12 @@ if __name__ == "__main__":
             'recv' : gevent.Greenlet.spawn(recv_msg, client, client_que),
             'client' : client
         }
-        data['send'].join()
-        data['recv'].join()
         client_que.append(data)
-        del(data)
-        del(client)
+        data['send'].start()
+        data['recv'].start()
+        print 'task join'
         count += 1
+if __name__ == "__main__":
+    gevent.joinall([
+        gevent.spawn(server_forever)
+    ])

@@ -109,9 +109,12 @@ def file_put_contents(filename, content, mode='wb'):
     """
     if content is None:
         return
-    f = open(getCodeStr(filename), 'wb')
-    f.write(content)
-    f.close()
+    try:
+        f = open(getCodeStr(filename), 'wb')
+        f.write(content)
+        f.close()
+    except IOError, e:
+        print e
 
 
 def file_get_contents(url):
@@ -127,7 +130,7 @@ def file_get_contents(url):
             msg = '下载文件 %s 时报出错误: %s' % (url, e)
             print "file %s download error: %s" % (url, e)
             log(msg)
-            return '/* %s */' % msg
+            return None
     if not os.path.isfile(url):
         return
     f = open(url, 'rb')

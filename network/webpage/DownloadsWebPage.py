@@ -13,7 +13,7 @@ import sys
 import time
 
 pattern = {
-    'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?></script>', re.IGNORECASE),
+    'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?</script>', re.IGNORECASE),
     'css': re.compile(r'<link.*?href=[\'\"](.*?)[\'\"].*?>', re.IGNORECASE),
     'page_image': re.compile(r'<img.*?src=[\'\"](.*?)[\'\"].*?>', re.IGNORECASE),
     'css_image': re.compile(r'url\([\'\"]?(.*?)[\'\"]?\)', re.IGNORECASE),
@@ -50,7 +50,7 @@ def real_url(uri, base_url=''):
     """
     if uri.find('http://') == 0 or uri.find('https://') == 0:
         return uri
-    if uri.find('//') == 0:
+    if uri.startswith('//'):
         return 'http:%s' % uri
 
     url_info = urlparse(base_url)

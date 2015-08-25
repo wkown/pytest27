@@ -1,0 +1,3 @@
+test/*
+vhost/*
+!index.html

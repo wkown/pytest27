@@ -41,6 +41,20 @@ class MyFrame(wx.Frame):
         menuBar.Append(editmenu,"&Edit")
         self.SetMenuBar(menuBar)
 
+        self.sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.buttons = []
+        for i in xrange(0,6):
+            self.buttons.append(wx.Button(self, -1, "Button &%d" % i))
+            self.sizer2.Add(self.buttons[i], 1, wx.EXPAND)
+
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.control, 1, wx.EXPAND)
+        self.sizer.Add(self.sizer2, 0, wx.EXPAND)
+
+        self.SetSizer(self.sizer)
+        self.SetAutoLayout(1)
+        self.sizer.Fit(self)
+
         self.Show(True)
 
     def OnAbout(self,event):

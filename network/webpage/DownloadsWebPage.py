@@ -227,6 +227,8 @@ def run_download(url, base_url, base_name):
                     file_put_contents('css/' + wk_basename(css_file), css_content)
 
     file_put_contents(base_name, page_content)
+    print "Download task is complete ^_^"
+    print "*********************************************************************************************************"
 
 if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'

@@ -148,18 +148,6 @@ def log(msg, log_file='download'):
     return file_put_contents('%s.log' % log_file, "[%s] %s\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), msg), 'ab')
 
 
-def replace_source_file_path(matchObj):
-    """
-    替换
-    :param matchObj:
-    :return:
-    """
-    match = matchObj.group(1)
-    if not match:
-        return ''
-    return matchObj.group(0).replace(match, dirs[k] + '/' + wk_basename(match))
-
-
 def replace_inner_source_file_path(matchObj):
     match = matchObj.group(1)
     if not match:
@@ -198,6 +186,47 @@ def getCodeStr(result, target_charset='gbk'):
         return myResult
     except:
         pass
+
+
+def run_download(url, base_url, base_name):
+
+    page_content = file_get_contents(url)
+
+    content = file_get_contents(url)
+    for k, v in pattern.items():
+        files1 = v.findall(content)
+        print files1
+        if not files1:
+            continue
+
+        download_filse(files1, dirs[k], base_url)
+
+        def replace_source_file_path(matchObj):
+            """
+            替换
+            :param matchObj:
+            :return:
+            """
+            match = matchObj.group(1)
+            if not match:
+                return ''
+            return matchObj.group(0).replace(match, dirs[k] + '/' + wk_basename(match))
+        # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
+        page_content = v.sub(replace_source_file_path, page_content)
+
+        if k == 'css':  # 如果是css 还要下载css中引用的文件
+            for css_file in files1:
+                print 'css/' + wk_basename(css_file)
+                css_content = file_get_contents('css/' + wk_basename(css_file))
+                if css_content is None:
+                    continue
+                css_matches = inner_files['css']['pattern'].findall(css_content)
+                if css_matches:
+                    download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
+                    css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
+                    file_put_contents('css/' + wk_basename(css_file), css_content)
+
+    file_put_contents(base_name, page_content)
 
 if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'
@@ -256,29 +285,4 @@ if __name__ == "__main__":
     print 'We will download the page use this url:%s' % getCodeStr(url,'utf-8')
     time.sleep(2)
 
-    page_content = file_get_contents(url)
-
-    content = file_get_contents(url)
-    for k, v in pattern.items():
-        files1 = v.findall(content)
-        print files1
-        if not files1:
-            continue
-
-        download_filse(files1, dirs[k], base_url)
-        # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
-        page_content = v.sub(replace_source_file_path, page_content)
-
-        if k == 'css':  # 如果是css 还要下载css中引用的文件
-            for css_file in files1:
-                print 'css/' + wk_basename(css_file)
-                css_content = file_get_contents('css/' + wk_basename(css_file))
-                if css_content is None:
-                    continue
-                css_matches = inner_files['css']['pattern'].findall(css_content)
-                if css_matches:
-                    download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
-                    css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
-                    file_put_contents('css/' + wk_basename(css_file), css_content)
-
-    file_put_contents(base_name, page_content)
+    run_download(url,base_url,base_name)

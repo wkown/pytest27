@@ -186,10 +186,15 @@ class DownloadPanel(wx.Panel):
         thread.start_new_thread(w_dwp.run_download,(url, base_url, base_name))
         #w_dwp.run_download(url, base_url, base_name)
 
+class DwpFrame(wx.Frame):
+    def __init__(self, *args, **kwargs):
+        wx.Frame.__init__(self, *args, **kwargs)
+        self.SetIcon(wx.Icon('download.ico', wx.BITMAP_TYPE_ICO))
+
 
 if __name__ == "__main__":
     app = wx.App(False)
-    frame = wx.Frame(None, title="Download Web Page", size=(600, 800))
+    frame = DwpFrame(None, title="Download Web Page", size=(600, 800))
     panel = DownloadPanel(frame)
     stdoutX = sys.stdout
     sys.stdout = DwpStdout(panel)

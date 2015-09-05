@@ -8,10 +8,10 @@ import wx.lib.newevent
 import sys
 import os
 import time
-import re
 import thread
 import DownloadsWebPage as w_dwp
-import StringIO
+import icon_images
+
 # 定义
 (DwpPrint, EVT_DWP_PRINT) = wx.lib.newevent.NewEvent()
 
@@ -186,7 +186,7 @@ class DownloadPanel(wx.Panel):
         thread.start_new_thread(w_dwp.run_download,(url, base_url, base_name))
         #w_dwp.run_download(url, base_url, base_name)
 
-import icon_images
+
 class DwpFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)

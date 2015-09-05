@@ -1,10 +1,9 @@
 # -*- coding:utf-8 -*-
-__author__ = 'walkskyer'
-"""
-为下载网页程序增加Gui界面
-"""
 import wx
 import wx.lib.newevent
+import wx.lib.dialogs
+from wx.lib.wordwrap import wordwrap
+
 import sys
 import os
 import time
@@ -12,7 +11,12 @@ import thread
 import DownloadsWebPage as w_dwp
 import icon_images
 
-# 定义
+__author__ = 'walkskyer'
+"""
+为下载网页程序增加Gui界面
+"""
+
+# 定义事件
 (DwpPrint, EVT_DWP_PRINT) = wx.lib.newevent.NewEvent()
 
 
@@ -190,12 +194,69 @@ class DownloadPanel(wx.Panel):
 class DwpFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)
+        self.Center()
         self.SetIcon(icon_images.AppIcon.GetIcon())
+        self.CreateStatusBar()
+
+        self.setup_menu()
+
+
+    def setup_menu(self):
+        #文件菜单
+        menu_file = wx.Menu()
+        menu_sub_exit = menu_file.Append(wx.ID_EXIT, u'退出(&E)',u'退出程序')
+        self.Bind(wx.EVT_MENU, self.MenuExit,  menu_sub_exit)
+        #帮助菜单
+        menu_help = wx.Menu()
+        menu_sub_help = menu_help.Append(wx.ID_HELP, u"使用手册(&M)", u"程序使用手册")
+        self.Bind(wx.EVT_MENU, self.MenuHelp,  menu_sub_help)
+        menu_sub_about = menu_help.Append(wx.ID_ABOUT, u"关于(&A)", u"关于这个程序的信息")
+        self.Bind(wx.EVT_MENU, self.MenuAbout,  menu_sub_about)
+
+        menuBar = wx.MenuBar()
+        menuBar.Append(menu_file, u"文件(&F)")
+        menuBar.Append(menu_help, u"帮助(&H)")
+        self.SetMenuBar(menuBar)
+
+
+    def MenuAbout(self, evt):
+        info = wx.AboutDialogInfo()
+        info.SetName(u"关于本程序")
+        info.SetVersion(u"1.0.0")
+        #info.SetCopyright("walkskyer")
+        info.SetDescription(wordwrap(
+            u"用于下载完整网页的程序，本程序同时保存网页中可探测的资源文件:js/css/图片/css中的图片，并且根据资源类型进行分类，放置到不同的目录中方便使用",
+            350, wx.ClientDC(self)))
+        #info.SetWebSite(("http://www.zhangweijie.net", u"我的博客"))
+        info.SetDevelopers(["walkskyer"])
+        #licenseText = u"请自由使用"
+        #info.SetLicense(wordwrap(licenseText, 500, wx.ClientDC(self)))
+
+        # Then we call wx.AboutBox giving it that info object
+        wx.AboutBox(info)
+
+    def MenuExit(self, evt):
+        self.Destroy()
+
+    def MenuHelp(self, evt):
+        msg = u"用法:\n" \
+              u"一般情况下只需要在目标网址填写好想要下载的网址即可。\n\n" \
+              u"此时，聪明的你，一定想到了，有些网页需要登录下载怎么办？\n" \
+              u"这时有个解决办法，就是手动将不能直接下载的网页保存到本地，注意保存网页一定只保存网页，不要选择保存全部。然后，同样输入目标网址，并且选择，保存好的网页源文件，点击下载即可。\n\n" \
+              u"聪明的你一定注意到还有个保存文件名，顾名思义了！"
+        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, u"使用手册")
+        dlg.ShowModal()
+
+class DwpMenuAction:
+    def __init__(self, frame):
+        self.frame = frame
+
+
 
 
 if __name__ == "__main__":
     app = wx.App(False)
-    frame = DwpFrame(None, title="Download Web Page", size=(600, 800))
+    frame = DwpFrame(None, title=u"下载网页", size=(600, 600))
     panel = DownloadPanel(frame)
     stdoutX = sys.stdout
     sys.stdout = DwpStdout(panel)

@@ -19,6 +19,17 @@ __author__ = 'walkskyer'
 # 定义事件
 (DwpPrint, EVT_DWP_PRINT) = wx.lib.newevent.NewEvent()
 
+app_info = {
+    'name': u"网页下载器",
+    'usage': u"用法:\n"
+             u"一般情况下只需要在目标网址填写好想要下载的网址即可。\n\n"
+             u"此时，聪明的你，一定想到了，有些网页需要登录下载怎么办？\n"
+             u"这时有个解决办法，就是手动将不能直接下载的网页保存到本地，注意保存网页一定只保存网页，不要选择保存全部。"
+             u"然后，同样输入目标网址，并且选择，保存好的网页源文件，点击下载即可。\n\n"
+             u"聪明的你一定注意到还有个保存文件名，顾名思义了！",
+    'description': u"用于下载完整网页的程序，本程序同时保存网页中可探测的资源文件:js/css/图片/css中的图片，并且根据资源类型进行分类，放置到不同的目录中方便使用"
+}
+
 
 class DwpStdout:
     def __init__(self, win=None):
@@ -221,16 +232,16 @@ class DwpFrame(wx.Frame):
 
     def MenuAbout(self, evt):
         info = wx.AboutDialogInfo()
-        info.SetName(u"关于本程序")
+        info.SetName(app_info['name'])
         info.SetVersion(u"1.0.0")
         #info.SetCopyright("walkskyer")
         info.SetDescription(wordwrap(
-            u"用于下载完整网页的程序，本程序同时保存网页中可探测的资源文件:js/css/图片/css中的图片，并且根据资源类型进行分类，放置到不同的目录中方便使用",
+            app_info['description'],
             350, wx.ClientDC(self)))
         #info.SetWebSite(("http://www.zhangweijie.net", u"我的博客"))
         info.SetDevelopers(["walkskyer"])
-        #licenseText = u"请自由使用"
-        #info.SetLicense(wordwrap(licenseText, 500, wx.ClientDC(self)))
+        licenseText = u"请自由使用"
+        info.SetLicense(wordwrap(licenseText, 500, wx.ClientDC(self)))
 
         # Then we call wx.AboutBox giving it that info object
         wx.AboutBox(info)
@@ -239,11 +250,7 @@ class DwpFrame(wx.Frame):
         self.Destroy()
 
     def MenuHelp(self, evt):
-        msg = u"用法:\n" \
-              u"一般情况下只需要在目标网址填写好想要下载的网址即可。\n\n" \
-              u"此时，聪明的你，一定想到了，有些网页需要登录下载怎么办？\n" \
-              u"这时有个解决办法，就是手动将不能直接下载的网页保存到本地，注意保存网页一定只保存网页，不要选择保存全部。然后，同样输入目标网址，并且选择，保存好的网页源文件，点击下载即可。\n\n" \
-              u"聪明的你一定注意到还有个保存文件名，顾名思义了！"
+        msg = app_info['usage']
         dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, u"使用手册")
         dlg.ShowModal()
 
@@ -256,7 +263,7 @@ class DwpMenuAction:
 
 if __name__ == "__main__":
     app = wx.App(False)
-    frame = DwpFrame(None, title=u"下载网页", size=(600, 600))
+    frame = DwpFrame(None, title=app_info['name'], size=(600, 600))
     panel = DownloadPanel(frame)
     stdoutX = sys.stdout
     sys.stdout = DwpStdout(panel)

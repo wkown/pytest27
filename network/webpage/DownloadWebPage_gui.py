@@ -151,6 +151,7 @@ class DownloadPanel(wx.Panel):
             dlg = wx.MessageDialog(self, u'请填写一个有效的目标网址!如:http://www.baidu.com',
                                u'请输入目标网址',
                                wx.OK | wx.ICON_INFORMATION)
+            dlg.SetOKLabel(u'确定')
             dlg.ShowModal()
             dlg.Destroy()
             return

@@ -186,10 +186,11 @@ class DownloadPanel(wx.Panel):
         thread.start_new_thread(w_dwp.run_download,(url, base_url, base_name))
         #w_dwp.run_download(url, base_url, base_name)
 
+import icon_images
 class DwpFrame(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, *args, **kwargs)
-        self.SetIcon(wx.Icon('download.ico', wx.BITMAP_TYPE_ICO))
+        self.SetIcon(icon_images.AppIcon.GetIcon())
 
 
 if __name__ == "__main__":

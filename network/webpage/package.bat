@@ -1,1 +1,1 @@
-python %PYINSTALLER%\pyinstaller.py -F --clean --icon=download.ico  DownloadWebPage_gui.py
+python %PYINSTALLER%\pyinstaller.py -F -w --clean --icon=download.ico  DownloadWebPage_gui.py

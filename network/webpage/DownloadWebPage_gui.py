@@ -118,7 +118,7 @@ class DownloadPanel(wx.Panel):
             defaultDir=os.getcwd(),
             defaultFile="",
             wildcard= self.wildcard,
-            style=wx.OPEN | wx.CHANGE_DIR
+            style=wx.OPEN
             )
         if dlg.ShowModal() == wx.ID_OK:
             # This returns a Python list of files that were selected.

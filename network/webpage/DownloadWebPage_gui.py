@@ -27,7 +27,9 @@ app_info = {
              u"这时有个解决办法，就是手动将不能直接下载的网页保存到本地，注意保存网页一定只保存网页，不要选择保存全部。"
              u"然后，同样输入目标网址，并且选择，保存好的网页源文件，点击下载即可。\n\n"
              u"聪明的你一定注意到还有个保存文件名，顾名思义了！",
-    'description': u"用于下载完整网页的程序，本程序同时保存网页中可探测的资源文件:js/css/图片/css中的图片，并且根据资源类型进行分类，放置到不同的目录中方便使用"
+    'description': u"用于下载完整网页的程序，本程序同时保存网页中可探测的资源文件:js/css/图片/css中的图片，并且根据资源类型进行分类，放置到不同的目录中方便使用",
+    'version': '1.0.0',
+    'developers': ["walkskyer"]
 }
 
 
@@ -97,7 +99,7 @@ class DownloadPanel(wx.Panel):
         self.SetSizerAndFit(mainSizer)
 
     def PrintLog(self, evt):
-        self.txt_log.WriteText(evt.value)
+        self.txt_log.WriteText(w_dwp.getCodeStr(evt.value, 'utf-8').decode('utf-8'))
 
     def OnLocalClear(self, evt):
         """
@@ -157,10 +159,6 @@ class DownloadPanel(wx.Panel):
             return
 
         local_file = self.get_local_filename()
-
-        if not os.path.isdir('html'):
-            os.mkdir('html')
-        os.chdir('html')
 
         if local_file is not None and os.path.isfile(w_dwp.getCodeStr(local_file)):
             url, base_url = local_file, url
@@ -234,13 +232,13 @@ class DwpFrame(wx.Frame):
     def MenuAbout(self, evt):
         info = wx.AboutDialogInfo()
         info.SetName(app_info['name'])
-        info.SetVersion(u"1.0.0")
+        info.SetVersion(app_info['version'])
         #info.SetCopyright("walkskyer")
         info.SetDescription(wordwrap(
             app_info['description'],
             350, wx.ClientDC(self)))
         #info.SetWebSite(("http://www.zhangweijie.net", u"我的博客"))
-        info.SetDevelopers(["walkskyer"])
+        info.SetDevelopers(app_info['developers'])
         licenseText = u"请自由使用"
         info.SetLicense(wordwrap(licenseText, 500, wx.ClientDC(self)))
 

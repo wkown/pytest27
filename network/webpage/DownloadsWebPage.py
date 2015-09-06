@@ -189,6 +189,9 @@ def getCodeStr(result, target_charset='gbk'):
 
 
 def run_download(url, base_url, base_name):
+    if not os.path.isdir('html'):
+        os.mkdir('html')
+    os.chdir('html')
 
     page_content = file_get_contents(url)
 
@@ -229,6 +232,9 @@ def run_download(url, base_url, base_name):
     file_put_contents(base_name, page_content)
     print "Download task is complete ^_^"
     print "*********************************************************************************************************"
+    print os.getcwd()
+    os.chdir('..')
+    print os.getcwd()
 
 if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'
@@ -243,12 +249,6 @@ if __name__ == "__main__":
 
     if len(sys.argv) <= 2:
         target_name = raw_input('please input the target name (optional default:index.html):')
-
-
-
-    if not os.path.isdir('html'):
-        os.mkdir('html')
-    os.chdir('html')
 
     if os.path.isfile(getCodeStr(url)):
         while len(base_url) <= 0:

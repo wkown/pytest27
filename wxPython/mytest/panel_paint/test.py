@@ -22,6 +22,7 @@ class MCard(wx.StaticText):
         dc.DrawBitmap(self.bmp, 0,0, True)
 
     def OnClick(self, evt):
+        #点击以后应该出发EVT_PAINT事件让所有card都执行刷新一次
         pos = self.GetPosition()
         self.SetPosition((pos[0],pos[1]+20))
 

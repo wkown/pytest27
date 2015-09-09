@@ -3,6 +3,12 @@ __author__ = 'walkskyer'
 """
 """
 import wx
+import wx.lib.newevent
+
+#刷新纸牌
+(CardRePaint, EVT_CARD_REPAINT) = wx.lib.newevent.NewEvent()
+#重设纸牌位置
+(CardChangePos, EVT_CARD_CHANGEPOS) = wx.lib.newevent.NewEvent()
 
 
 class MCard(wx.StaticText):
@@ -27,15 +33,19 @@ class MCard(wx.StaticText):
         dc = wx.PaintDC(self)
         dc.DrawBitmap(self.bmp, 0,0, True)
 
+    def ChangePos(self, evt):
+        self.SetPosition(self.pos)
+
+
     def OnClick(self, evt):
         self.is_pickup = not self.is_pickup
 
         #点击以后应该出发EVT_PAINT事件让所有card都执行刷新一次
         pos = self.GetPosition()
         if self.is_pickup:
-            self.pos=(pos[0], pos[1]+20)
-        else:
             self.pos=(pos[0], pos[1]-20)
+        else:
+            self.pos=(pos[0], pos[1]+20)
 
         evt = CardRePaint()
         wx.PostEvent(self.GetParent(), evt)

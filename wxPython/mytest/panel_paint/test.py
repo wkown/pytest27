@@ -13,6 +13,7 @@ class MCard(wx.StaticText):
 
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_LEFT_UP, self.OnClick)
+        self.is_pickup = False
 
     def setBitmap(self, filename):
         self.bmp = wx.Image(filename, wx.BITMAP_TYPE_JPEG).ConvertToBitmap()
@@ -23,7 +24,12 @@ class MCard(wx.StaticText):
 
     def OnClick(self, evt):
         pos = self.GetPosition()
-        self.SetPosition((pos[0],pos[1]+20))
+        if self.is_pickup:
+            self.SetPosition((pos[0],pos[1]-20))
+        else:
+            self.SetPosition((pos[0],pos[1]+20))
+
+        self.is_pickup = not self.is_pickup
 
 if __name__ == "__main__":
     app = wx.App(False)

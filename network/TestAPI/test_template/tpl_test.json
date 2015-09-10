@@ -1,14 +1,14 @@
 {
   "host": "webapp.zwj",
-  "data_type":"jsonp|json",/*返回值类型*/
+  "dataType":"jsonp|json",/*返回值类型*/
   "api": {
     "app": {
       "name": "app 接口",
-      "group": [
+      "items": [
         {
           "name": "用户注册",
           "url": "/app/user/register",
-          "post_field": [
+          "postField": [
             {
               "field": "mobile",
               "label": "手机",
@@ -28,7 +28,7 @@
               "value": ""
             }
           ],
-          "return_data": [
+          "returnData": [
             {
               "field": "token",
               "label": "登录密钥",
@@ -42,12 +42,12 @@
               "value": "15810101010"
             }
           ],
-          "data_type": "json"
+          "dataType": "json"
         },
         {
           "name": "用户登录",
           "url": "/app/user/login",
-          "post_field": [
+          "postField": [
             {
               "field": "username",
               "label": "用户名或手机",
@@ -61,7 +61,7 @@
               "value": "123"
             }
           ],
-          "return_data": [
+          "returnData": [
             {
               "field": "token",
               "label": "登录密钥",
@@ -75,7 +75,7 @@
               "value": "15810101010"
             }
           ],
-          "data_type": "json"
+          "dataType": "json"
         }
       ]
     }

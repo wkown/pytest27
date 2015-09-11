@@ -42,7 +42,7 @@ def run(url, select_group, config,):
     return hc.get(item.url, get_val)
 if __name__ == "__main__":
     configName = raw_input('configName:')
-    filename = "test_template/%s.json" % configName
+    filename = "api_tpl/%s.json" % configName
     config = api.ApiConfig(filename)
     while True:
         select_group = raw_input('Select a group or command(ls):')

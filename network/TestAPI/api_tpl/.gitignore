@@ -1,0 +1,2 @@
+*.json
+!tpl_test.json

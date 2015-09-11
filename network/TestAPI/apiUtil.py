@@ -18,6 +18,8 @@ class HttpClient:
         if self.host is not None:
             self.conn = httplib.HTTPConnection(self.host)
         self.response = None
+        self.headers = {"Content-type": "application/x-www-form-urlencoded",
+                        "Accept": "text/plain"}
 
     def post(self, url='', body={}, headers={}):
         return self.read("POST", url, body, headers)
@@ -27,8 +29,11 @@ class HttpClient:
 
     #read the respond content
     def read(self, method, url, body={}, headers={}):
+        if len(headers) == 0:
+            headers = self.headers
+
         body = urllib.urlencode(body)
-        if len(body) < 0:
+        if len(body) == 0:
             body = None
 
         self.conn.request(method, url, body, headers)
@@ -50,7 +55,8 @@ class HttpClient:
 class ApiConfig:
     """ api config object
     """
-    def __init__(self,filename):
+    def __init__(self, filename):
+        self.filename = ''
         if os.path.isfile(filename):
             self.filename = filename
         self.config = None
@@ -75,9 +81,12 @@ class ApiConfig:
         return None
 
     def get_group(self,group):
-        if self.config['api'].has_key(group):
+        if self.has_group(group):
             return self.config['api'][group]
         return None
+
+    def has_group(self, group):
+        return group in self.config['api']
 
     def get_common_config(self, key):
         if key in self.config:
@@ -111,9 +120,10 @@ class ApiItem:
 
 if __name__ == "__main__":
 
-    #hc = HttpClient(host="webapp.zwj")
+    hc = HttpClient(host="webapp.zwj")
     #print hc.post('/app/user/register')
-    #print hc.post('/app/user/login')
+    print hc.post('/app/user/login', {'username': '15854569302', 'password': '123'})
+    exit(0)
 
     ac = ApiConfig('./test_template/tpl_test.json')
     print ac.config

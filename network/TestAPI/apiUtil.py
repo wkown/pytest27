@@ -40,6 +40,12 @@ class HttpClient:
             self.response = None
         return None
 
+    def create_url(self, url, body={}):
+        """create url with param"""
+        if len(body) > 0:
+            return "%s?%s" % (url, urllib.urlencode(body))
+        return url
+
 
 class ApiConfig:
     """ api config object

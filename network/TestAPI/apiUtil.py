@@ -76,7 +76,7 @@ class ApiConfig:
     def get_item(self, url, group):
         if self.config['api'].has_key(group) and len(self.config['api'][group]['items']) > 0:
             for item in self.config['api'][group]['items']:
-                if url == item['url'] or item['url'].find(url):
+                if url == item['url'] or item['url'].find(url) != -1:
                     return ApiItem(item)
         return None
 

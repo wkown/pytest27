@@ -75,7 +75,8 @@ if __name__ == "__main__":
                 if next_op == 'back':
                     break
                 if next_op == 'reload':
-                    config = api.ApiConfig(filename)
+                    print 'Reload the config file'
+                    config.load_config(filename)
                     continue
                 if next_op == 'help':
                     print "" \

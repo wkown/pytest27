@@ -85,6 +85,21 @@ class ApiConfig:
             return self.config['api'][group]
         return None
 
+    #获取分组下的所有子项
+    def get_group_items(self, group):
+        items = []
+        if self.has_group(group):
+            for item in self.get_group(group)['items']:
+                items.append(ApiItem(item))
+        return items
+
+    #获取分组列表
+    def get_groups(self):
+        items = []
+        for k, v in self.config['api'].items():
+            items.append({'name': v['name'], 'field': k})
+        return items
+
     def has_group(self, group):
         return group in self.config['api']
 

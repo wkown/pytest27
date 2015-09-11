@@ -9,6 +9,7 @@ import apiUtil as api
 def run(url, select_group, config,):
 
     item = config.get_item(url, select_group)
+    print "Current url(%s) in testing:" % item.url
     if item is None:
         print "The item is None, may be your url is not correct!"
         return None
@@ -62,10 +63,10 @@ if __name__ == "__main__":
             if url == '' or url == 'back':
                 print "Change Group!"
                 break
+            next_op = None
             while True:
                 if next_op is None or next_op == '' or next_op == 'continue':
                     print '*********** start *************'
-                    print "Current url(%s) in testing:" % url
                     print run(url, select_group, config)
                     print '***********  end  *************\n'
 

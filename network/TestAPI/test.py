@@ -70,7 +70,7 @@ if __name__ == "__main__":
                     print run(url, select_group, config)
                     print '***********  end  *************\n'
 
-                next_op = raw_input('The next?(back|continue|reload|help):')
+                next_op = raw_input('Press Enter to continue or input the command (back|reload|help):')
 
                 if next_op == 'back':
                     break

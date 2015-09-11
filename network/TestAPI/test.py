@@ -9,6 +9,10 @@ import apiUtil as api
 def run(url, select_group, config,):
 
     item = config.get_item(url, select_group)
+    if item is None:
+        print "There no item can mach use the url:%s" % url
+        return
+
     print "Current url(%s) in testing:" % item.url
     if item is None:
         print "The item is None, may be your url is not correct!"
@@ -45,19 +49,30 @@ if __name__ == "__main__":
     filename = "api_tpl/%s.json" % configName
     config = api.ApiConfig(filename)
     while True:
-        select_group = raw_input('Select a group or command(ls):')
+        select_group = raw_input('Select a group or command(ls|reload):')
         if select_group == 'ls':
             for item in config.get_groups():
                 print "%s:%s" % (item['name'], item['field'])
             continue
+
+        if select_group == 'reload':
+                print 'Reload the config file'
+                config.load_config(filename)
+                continue
+
         if not config.has_group(select_group):
             print 'There is not a group named: %s ' % select_group
             continue
         while True:
-            url = raw_input('Input a url or command(ls|back):')
+            url = raw_input('Input a url or command(ls|back|reload):')
             if url == 'ls':
                 for item in config.get_group_items(select_group):
                     print "%s:%s" % (item.name, item.url)
+                continue
+
+            if url == 'reload':
+                print 'Reload the config file'
+                config.load_config(filename)
                 continue
 
             if url == '' or url == 'back':

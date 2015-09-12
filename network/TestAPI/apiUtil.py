@@ -41,7 +41,10 @@ class HttpClient:
             self.response = self.conn.getresponse()
             if self.response.status == 200:
                 return self.response.read()
+            print "Exception: %s,%s" % (self.response.status, self.response.reason)
+            print "Exception: %s" % self.response.read()
         except httplib.ResponseNotReady, e:
+            print "Exception: %s %s,%s" % (e, self.response.status, self.response.reason)
             self.response = None
         return None
 

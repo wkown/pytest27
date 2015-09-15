@@ -74,7 +74,11 @@ class ApiConfig:
         f = open(filename, 'rb')
         json_str = f.read()
         f.close()
-        self.config = json.loads(re.sub('/\*.*?\*/', '', json_str))
+        try:
+            self.config = json.loads(re.sub('/\*.*?\*/', '', json_str))
+        except ValueError, e:
+            print "The config data may have some syntax error: %s" % e
+
 
     def get_item(self, url, group):
         if self.config['api'].has_key(group) and len(self.config['api'][group]['items']) > 0:

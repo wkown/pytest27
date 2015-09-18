@@ -18,7 +18,7 @@ class HttpClient:
         if self.host is not None:
             self.conn = httplib.HTTPConnection(self.host)
         self.response = None
-        self.headers = {"Content-type": "application/x-www-form-urlencoded",
+        self.postHeaders = {"Content-type": "application/x-www-form-urlencoded",
                         "Accept": "text/plain"}
 
     def post(self, url='', body={}, headers={}):
@@ -29,8 +29,8 @@ class HttpClient:
 
     #read the respond content
     def read(self, method, url, body={}, headers={}):
-        if len(headers) == 0:
-            headers = self.headers
+        if len(headers) == 0 and method == "POST":
+            headers = self.postHeaders
 
         body = urllib.urlencode(body)
         if len(body) == 0:
@@ -138,6 +138,15 @@ class ApiItem:
         self.dataType = item_conf['dataType']
         # item return data
         self.returnData = item_conf['returnData']
+
+    def prepare_val(self, value, prepare_rule):
+        """prepare the value which need input
+        """
+        for cmd in prepare_rule.split('|'):
+            if cmd == 'unquote':
+                value = urllib.unquote(value)
+
+        return value
 
 
 if __name__ == "__main__":

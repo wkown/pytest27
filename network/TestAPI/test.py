@@ -25,6 +25,11 @@ def run(url, select_group, config,):
         for i in xrange(0, len(item.getField)):
             field = item.getField[i]
             get_val[field['field']] = raw_input("%s(%s):" % (field['label'], field['field']))
+            if field.has_key('prepare'):
+                get_val[field['field']] = item.prepare_val(get_val[field['field']],field['prepare'])
+
+
+
     #POST field input
     post_val = {}
     if len(item.postField) > 0:
@@ -43,7 +48,7 @@ def run(url, select_group, config,):
     if len(post_val) > 0:
         return hc.post(url, post_val)
 
-    return hc.get(item.url, get_val)
+    return hc.get(url)
 if __name__ == "__main__":
     configName = raw_input('configName:')
     filename = "api_tpl/%s.json" % configName
@@ -63,9 +68,14 @@ if __name__ == "__main__":
         if not config.has_group(select_group):
             print 'There is not a group named: %s ' % select_group
             continue
+
+        last_url = ''
         while True:
             url = raw_input('Input a url or command(ls|back|reload):')
-            if url == 'ls':
+            if len(url) == 0 and len(last_url) > 0:
+                url = last_url
+
+            if len(url) == 0 or url == 'ls':
                 for item in config.get_group_items(select_group):
                     print "%s:%s" % (item.name, item.url)
                 continue
@@ -75,9 +85,19 @@ if __name__ == "__main__":
                 config.load_config(filename)
                 continue
 
-            if url == '' or url == 'back':
+            if url == 'back':
                 print "Change Group!"
                 break
+
+            if len(url) > 0:
+                last_url = url
+                try:
+                    print '*********** start *************'
+                    print run(url, select_group, config)
+                    print '***********  end  *************\n'
+                except Exception, e:
+                    print "Error:%s" % e
+            """
             next_op = None
             while True:
                 if next_op is None or next_op == '' or next_op == 'continue':
@@ -101,3 +121,4 @@ if __name__ == "__main__":
                           "help : Show this message"
                     raw_input('Press any key to continue ...')
                     continue
+                    """

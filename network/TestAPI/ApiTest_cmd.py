@@ -24,7 +24,8 @@ def run(url, select_group, config,):
         print 'please input the GET field:'
         for i in xrange(0, len(item.getField)):
             field = item.getField[i]
-            get_val[field['field']] = raw_input("%s(%s):" % (field['label'], field['field']))
+            print "%s(%s):" % (field['label'], field['field'])
+            get_val[field['field']] = raw_input()
             if field.has_key('prepare'):
                 get_val[field['field']] = item.prepare_val(get_val[field['field']],field['prepare'])
 
@@ -36,7 +37,8 @@ def run(url, select_group, config,):
         print 'please input the POST field:'
         for i in xrange(0, len(item.postField)):
             field = item.postField[i]
-            post_val[field['field']] = raw_input("%s(%s):" % (field['label'], field['field']))
+            print u"%s(%s):" % (field['label'], field['field'])
+            post_val[field['field']] = raw_input()
         #print post_val
 
     hc = api.HttpClient(host=config.get_common_config('host'))
@@ -46,9 +48,10 @@ def run(url, select_group, config,):
         url = hc.create_url(url, get_val)
 
     if len(post_val) > 0:
-        return hc.post(url, post_val)
-
-    return hc.get(url)
+        result = hc.post(url, post_val)
+    else:
+        result = hc.get(url)
+    print result.decode('utf-8')
 if __name__ == "__main__":
     configName = raw_input('configName:')
     filename = "api_tpl/%s.json" % configName

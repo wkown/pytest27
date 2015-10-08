@@ -13,7 +13,7 @@ if __name__ == "__main__":
     file_path = os.path.dirname(os.path.realpath(__file__))
     config.read('%s/mysql_backup.ini' % file_path)
     cfg_common = dict(config.items('common'))
-    datetime = time.strftime('%w_%H%M%S')#按周命名最多可存储最近一周的备份
+    datetime = time.strftime('%w_%H%M')#按周命名最多可存储最近一周的备份
     for i in xrange(1, 1000):
         try:
             db = dict(config.items('db%s' % i))

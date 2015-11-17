@@ -7,7 +7,7 @@ import socket
 
 if __name__ == "__main__":
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    s.connect(('www.taobao.com',80))
+    s.connect(('www.baidu.com',80))
     s.send('GET / http/1.1\r\nHost: www.baidu.com\r\nConnection: close\r\n\r\n')
     data_buffer = []
     while True:

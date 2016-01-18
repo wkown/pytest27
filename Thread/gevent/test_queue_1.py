@@ -22,14 +22,14 @@ def boss(task_queue):
     for i in xrange(1, 25):
         print 'Boss send task %s ' % i
         task_queue.put(i)
-        gevent.sleep(0.2)
+        gevent.sleep(0.1)
 
 
 if __name__ == "__main__":
     task = Queue()
     gevent.joinall([
-        gevent.spawn(boss, task),
         gevent.spawn(worker, '张三', task),
         gevent.spawn(worker, '李四', task),
+        gevent.spawn(boss, task),
         gevent.spawn(worker, '王二麻子', task)
     ])

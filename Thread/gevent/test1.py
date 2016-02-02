@@ -37,7 +37,7 @@ def handle(name, switch):
 if __name__ == "__main__":
     switch = Switch()
     g1 = gevent.spawn(handle, 'g1', switch)
-    g1.start()
+    #g1.start()
 
     time.sleep(6)
 
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     time.sleep(6)
 
     g3 = gevent.spawn(handle, 'g3', switch)
-    g3.start()
+    #g3.start()
 
     time.sleep(6)
 
@@ -56,6 +56,7 @@ if __name__ == "__main__":
 
     time.sleep(6)
 
+    #阻塞不退出
     gevent.joinall([
         gevent.spawn(handle, '1:dog', switch),
         gevent.spawn(handle, '2:cat', switch),

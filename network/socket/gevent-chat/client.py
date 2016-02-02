@@ -88,7 +88,7 @@ def send_msg(client):
 
 def insert_msg(client):
     while True:
-        msg = raw_input()
+        msg = raw_input("say something:")
         if msg:
             client.msg_append(msg)
         gevent.sleep(0.5)

@@ -5,7 +5,7 @@ gevent 玩具3 聊天服务器 服务器端
 """
 import gevent
 from gevent import monkey
-#monkey.patch_all()
+monkey.patch_all()
 from collections import deque
 import socket
 
@@ -44,7 +44,7 @@ class SockClient():
         try:
             return self.conn.recv(length, flags)
         except socket.error, e:
-            print e
+            print "client-recv(%s):%s"% (self.name,e)
             return None
 
     def recv_all(self):
@@ -79,18 +79,13 @@ class SockClient():
             self.send(self.msg_pop())
 
 
-
-
 def send_msg(name, client):
     while True:
         print '%s:%s' % (name, 'I want send')
         if client.msg_len() > 0:
             print '%s:%s' % (name, client.msg_pop())
-
-        if name == 'g1':
-            print '*************************************'
-        gevent.sleep()
-
+        else:
+            gevent.sleep(5)
 
 
 def recv_msg(client, client_que):
@@ -102,34 +97,41 @@ def recv_msg(client, client_que):
             for cli in client_que:
                 if cli['client'].name != client.name:
                     cli['client'].msg_append("%s:%s" % (client.name, msg))
-        gevent.sleep()
+        else:
+            gevent.sleep(5)
+
+
+client_que = deque()
+
+
+def handle(name, cli_info):
+    client = SockClient(name)
+    client.conn, client.addr = cli_info
+    client.conn.setblocking(0)
+    print '%s:%s' % (name, client.addr)
+    data = {
+        'name':name,
+        'send' : gevent.Greenlet(send_msg, name, client),
+        'recv' : gevent.Greenlet(recv_msg, client, client_que),
+        'client' : client
+    }
+    client_que.append(data)
+    data['send'].start()
+    data['recv'].start()
+
 
 def server_forever():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(('', 18888))
     server.listen(20)
-
-    client_que = deque()
     count=1
+    print 'I\'m started,Waiting for you...'
     while True:
         cli_info = server.accept()
         name = 'custom_%s' % count
-        client = SockClient(name)
-        client.conn, client.addr = cli_info
-        client.conn.setblocking(0)
-        print '%s:%s' % (name, client.addr)
-        data={
-            'name':name,
-            'send' : gevent.Greenlet.spawn(send_msg, name, client),
-            'recv' : gevent.Greenlet.spawn(recv_msg, client, client_que),
-            'client' : client
-        }
-        client_que.append(data)
-        data['send'].start()
-        data['recv'].start()
+        handle(name, cli_info)
         print 'task join'
         count += 1
 if __name__ == "__main__":
-    gevent.joinall([
-        gevent.spawn(server_forever)
-    ])
+    print "server starting"
+    server_forever()

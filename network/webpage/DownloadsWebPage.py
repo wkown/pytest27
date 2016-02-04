@@ -123,7 +123,7 @@ def file_get_contents(url):
     :param url:
     :return:
     """
-    if url.find('http://') != -1:
+    if url.find('http://') != -1 or url.find('https://') != -1:
         try:
             return urllib.urlopen(url).read()
         except Exception, e:

@@ -2,6 +2,7 @@
 __author__ = 'walkskyer'
 """
 基本客户端操作 gopher
+cmd: python gopher_01.py quux.org /
 """
 import socket, sys
 

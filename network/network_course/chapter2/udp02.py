@@ -22,6 +22,7 @@ if __name__ == "__main__":
         print "Wrong-size reply %d: %s" % (len(buf), buf)
         sys.exit(1)
 
+    print buf
     secs = struct.unpack("!I", buf)[0]
     secs -= 2208988800
     print time.ctime(int(secs))

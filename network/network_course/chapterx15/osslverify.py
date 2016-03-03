@@ -2,6 +2,8 @@
 __author__ = 'walkskyer'
 """
 
+success domain: www.python.org github.org
+error domain:www.baidu.com
 """
 import socket, sys
 from OpenSSL import SSL

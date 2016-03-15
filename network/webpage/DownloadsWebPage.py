@@ -6,7 +6,7 @@ __author__ = 'walkskyer'
 20150214
 """
 import re
-import urllib
+import urllib2
 import os
 from urlparse import urlparse
 import sys
@@ -125,7 +125,9 @@ def file_get_contents(url):
     """
     if url.find('http://') != -1 or url.find('https://') != -1:
         try:
-            return urllib.urlopen(url).read()
+            req = urllib2.Request(url,None,{'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0'})
+            return urllib2.urlopen(req).read()
+            #return urllib.urlopen(url).read()
         except Exception, e:
             msg = '下载文件 %s 时报出错误: %s' % (url, e)
             print "file %s download error: %s" % (url, e)

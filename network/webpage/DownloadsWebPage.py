@@ -30,10 +30,11 @@ dirs = {'js': 'js',
 inner_files = {'css': {'pattern': re.compile('url\([\'\"]?(.*?)[\'\"]?\)', re.IGNORECASE), 'dir': '../images'}}
 
 
-def wk_basename(v):
+def wk_target_name(v, origin_name=True):
     """
     获取文件名
     :param v:
+    :param origin_name:
     :return:
     """
     filename = os.path.basename(v.strip())
@@ -41,6 +42,9 @@ def wk_basename(v):
     pos = filename.find('?')
     if (pos) != -1:
         filename = filename[0: pos]
+    if filename and not origin_name:
+        path = os.path.dirname(v.strip()).replace('http://', '').replace('https://', '').replace('//', '').replace('..', '')
+        filename = '%s-%s' % (path.replace('/', '-'), filename)
     return filename
 
 
@@ -68,12 +72,13 @@ def real_url(uri, base_url=''):
     return uri
 
 
-def download_filse(file_list, dir, base_url=''):
+def download_filse(file_list, dir, base_url='', origin_name=True):
     """
     下载文件列表
     :param file_list:
     :param dir:
     :param base_url:
+    :param origin_name:
     :return:
     """
     if not os.path.isdir(dir):
@@ -81,9 +86,10 @@ def download_filse(file_list, dir, base_url=''):
         os.mkdir(dir)
 
     for v in file_list:
-        filename = wk_basename(v.strip())
+        filename = wk_target_name(v.strip(), origin_name)
         if filename == '':
             continue
+
         print "%s_filename:%s\n" % (dir, filename)
         download_file(dir + '/' + filename, v, base_url)
 
@@ -161,7 +167,7 @@ def replace_inner_source_file_path(matchObj):
     match = matchObj.group(1)
     if not match:
         return ''
-    return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_basename(match))
+    return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_target_name(match))
 
 def getCodeStr(result, target_charset='gbk'):
     #gb2312
@@ -211,7 +217,9 @@ def run_download(url, base_url, base_name):
         if not files1:
             continue
 
-        download_filse(files1, dirs[k], base_url)
+        save_basename = (k != 'page_image')
+
+        download_filse(files1, dirs[k], base_url, save_basename)
 
         def replace_source_file_path(matchObj):
             """
@@ -222,21 +230,21 @@ def run_download(url, base_url, base_name):
             match = matchObj.group(1)
             if not match:
                 return ''
-            return matchObj.group(0).replace(match, dirs[k] + '/' + wk_basename(match))
+            return matchObj.group(0).replace(match, dirs[k] + '/' + wk_target_name(match, save_basename))
         # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
         page_content = v.sub(replace_source_file_path, page_content)
 
         if k == 'css':  # 如果是css 还要下载css中引用的文件
             for css_file in files1:
-                print 'css/' + wk_basename(css_file)
-                css_content = file_get_contents('css/' + wk_basename(css_file))
+                print 'css/' + wk_target_name(css_file)
+                css_content = file_get_contents('css/' + wk_target_name(css_file))
                 if css_content is None:
                     continue
                 css_matches = inner_files['css']['pattern'].findall(css_content)
                 if css_matches:
                     download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
                     css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
-                    file_put_contents('css/' + wk_basename(css_file), css_content)
+                    file_put_contents('css/' + wk_target_name(css_file), css_content)
 
     file_put_contents(base_name, page_content)
     print "Download task is complete ^_^"

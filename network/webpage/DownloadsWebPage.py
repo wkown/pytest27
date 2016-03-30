@@ -9,8 +9,11 @@ import re
 import urllib2
 import os
 from urlparse import urlparse
+import socket
 import sys
 import time
+
+socket.setdefaulttimeout(30)
 
 pattern = {
     'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?</script>', re.IGNORECASE),
@@ -20,7 +23,7 @@ pattern = {
 }
 dirs = {'js': 'js',
         'css': 'css',
-        'page_image': 'images',
+        'page_image': 'images_page',
         'css_image': 'images',
         'inner_css': '../images'
 }
@@ -129,7 +132,7 @@ def file_get_contents(url):
             return urllib2.urlopen(req).read()
             #return urllib.urlopen(url).read()
         except Exception, e:
-            msg = '下载文件 %s 时报出错误: %s' % (url, e)
+            msg = u'下载文件 %s 时报出错误: %s' % (url, e)
             print "file %s download error: %s" % (url, e)
             log(msg)
             return None

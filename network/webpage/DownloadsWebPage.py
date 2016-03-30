@@ -88,19 +88,23 @@ def download_filse(file_list, dir, base_url=''):
         download_file(dir + '/' + filename, v, base_url)
 
 
-def download_file(filename, url, base_url=''):
+def download_file(filename, target_url, base_url=''):
     """
     обтьнд╪Ч0
     :param filename:
-    :param url:
+    :param target_url:
     :param base_url:
     :return:
     """
-    url = url.strip().replace('\'', '').replace('"', '')
-    url = real_url(url, base_url)
+    if os.path.isfile(filename):
+        print 'File: %s is exist.' % filename
+        return
 
-    print "download: %s \n" % url
-    file_put_contents(filename, file_get_contents(url))
+    target_url = target_url.strip().replace('\'', '').replace('"', '')
+    target_url = real_url(target_url, base_url)
+
+    print "download: %s \n" % target_url
+    file_put_contents(filename, file_get_contents(target_url))
 
 
 def file_put_contents(filename, content, mode='wb'):

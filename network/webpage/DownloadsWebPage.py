@@ -25,8 +25,12 @@ dirs = {'js': 'js',
         'css': 'css',
         'page_image': 'images_page',
         'css_image': 'images',
-        'inner_css': '../images'
+        'font': 'font',
+        'inner_css': '../images',
+        'inner_font': '../font'
 }
+font_ext = ('.ttf', '.eot', '.svg', '.woff', '.woff2')
+
 inner_files = {'css': {'pattern': re.compile('url\([\'\"]?(.*?)[\'\"]?\)', re.IGNORECASE), 'dir': '../images'}}
 
 
@@ -114,6 +118,7 @@ def download_file(filename, target_url, base_url=''):
     target_url = real_url(target_url, base_url)
 
     print "download: %s \n" % target_url
+    is_font_file(filename)
     file_put_contents(filename, file_get_contents(target_url))
 
 
@@ -158,6 +163,20 @@ def file_get_contents(url):
     return content
 
 
+def is_font_file(filename):
+    """
+    根据文件名判断是否为字体文件
+    :param filename:
+    :return:
+    """
+    last_dot_index = filename.rfind('.')
+    if last_dot_index > -1:
+        ext = filename[last_dot_index:].lower()
+        if ext in font_ext:
+            return True
+    return False
+
+
 def log(msg, log_file='download'):
     if msg is None:
         return
@@ -167,15 +186,25 @@ def log(msg, log_file='download'):
     return file_put_contents('%s.log' % log_file, "[%s] %s\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), msg), 'ab')
 
 
-def replace_inner_source_file_path(matchObj):
+def replace_resource_path(matchObj, target_dir=''):
+    """
+    替换资源文件目录
+    :param matchObj:
+    :param target_dir:
+    :return:
+    """
     match = matchObj.group(1)
     if not match:
         return ''
 
     if match.strip().startswith('data:image'):
-        return ''
+        return matchObj.group(0)
 
-    return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_target_name(match))
+    return matchObj.group(0).replace(match, target_dir + '/' + wk_target_name(match))
+
+
+def replace_inner_source_file_path(matchObj):
+    return replace_resource_path(matchObj, inner_files['css']['dir'])
 
 def getCodeStr(result, target_charset='gbk'):
     #gb2312
@@ -235,13 +264,14 @@ def run_download(url, base_url, base_name):
             :param matchObj:
             :return:
             """
-            match = matchObj.group(1)
-            if not match:
-                return ''
-            if match.strip().startswith('data:image/'):
-                return matchObj.group(0)
-
-            return matchObj.group(0).replace(match, dirs[k] + '/' + wk_target_name(match, save_basename))
+            return replace_resource_path(matchObj, dirs[k])
+            # match = matchObj.group(1)
+            # if not match:
+            #     return ''
+            # if match.strip().startswith('data:image/'):
+            #     return matchObj.group(0)
+            #
+            # return matchObj.group(0).replace(match, dirs[k] + '/' + wk_target_name(match, save_basename))
         # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
         page_content = v.sub(replace_source_file_path, page_content)
 

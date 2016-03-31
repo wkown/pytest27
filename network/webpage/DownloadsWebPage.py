@@ -106,6 +106,10 @@ def download_file(filename, target_url, base_url=''):
         print 'File: %s is exist.' % filename
         return
 
+    if target_url.strip().startswith('data:image'):
+        print 'url: %s seems not a file.' % filename
+        return ''
+
     target_url = target_url.strip().replace('\'', '').replace('"', '')
     target_url = real_url(target_url, base_url)
 
@@ -167,6 +171,10 @@ def replace_inner_source_file_path(matchObj):
     match = matchObj.group(1)
     if not match:
         return ''
+
+    if match.strip().startswith('data:image'):
+        return ''
+
     return matchObj.group(0).replace(match, inner_files['css']['dir'] + '/' + wk_target_name(match))
 
 def getCodeStr(result, target_charset='gbk'):
@@ -230,6 +238,9 @@ def run_download(url, base_url, base_name):
             match = matchObj.group(1)
             if not match:
                 return ''
+            if match.strip().startswith('data:image/'):
+                return matchObj.group(0)
+
             return matchObj.group(0).replace(match, dirs[k] + '/' + wk_target_name(match, save_basename))
         # return str_replace(match[1],dirs[k].'/'.wk_basename(match[1]),match[0])
         page_content = v.sub(replace_source_file_path, page_content)

@@ -25,9 +25,9 @@ dirs = {'js': 'js',
         'css': 'css',
         'page_image': 'images_page',
         'css_image': 'images',
-        'font': 'font',
+        'font': 'fonts',
         'inner_css': '../images',
-        'inner_font': '../font'
+        'inner_font': '../fonts'
 }
 font_ext = ('.ttf', '.eot', '.svg', '.woff', '.woff2')
 
@@ -76,7 +76,7 @@ def real_url(uri, base_url=''):
     return uri
 
 
-def download_filse(file_list, dir, base_url='', origin_name=True):
+def download_files(file_list, dir, base_url='', origin_name=True):
     """
     下载文件列表
     :param file_list:
@@ -95,6 +95,9 @@ def download_filse(file_list, dir, base_url='', origin_name=True):
             continue
 
         print "%s_filename:%s\n" % (dir, filename)
+        if is_font_file(filename):
+            download_file(dirs['font'] + '/' + filename, v, base_url)
+            continue
         download_file(dir + '/' + filename, v, base_url)
 
 
@@ -106,19 +109,22 @@ def download_file(filename, target_url, base_url=''):
     :param base_url:
     :return:
     """
+    if not os.path.isdir(os.path.dirname(filename)):
+        print 'curr dir: %s and I will make dir： %s\n' % (os.getcwd(), dir)
+        os.mkdir(os.path.dirname(filename))
+
     if os.path.isfile(filename):
         print 'File: %s is exist.' % filename
         return
 
     if target_url.strip().startswith('data:image'):
-        print 'url: %s seems not a file.' % filename
+        print 'URL seems not a file: %s .' % filename
         return ''
 
     target_url = target_url.strip().replace('\'', '').replace('"', '')
     target_url = real_url(target_url, base_url)
 
     print "download: %s \n" % target_url
-    is_font_file(filename)
     file_put_contents(filename, file_get_contents(target_url))
 
 
@@ -169,10 +175,10 @@ def is_font_file(filename):
     :param filename:
     :return:
     """
+    filename = wk_target_name(filename.strip().lower())
     last_dot_index = filename.rfind('.')
     if last_dot_index > -1:
-        ext = filename[last_dot_index:].lower()
-        if ext in font_ext:
+        if filename[last_dot_index:] in font_ext:
             return True
     return False
 
@@ -199,6 +205,12 @@ def replace_resource_path(matchObj, target_dir=''):
 
     if match.strip().startswith('data:image'):
         return matchObj.group(0)
+
+    if is_font_file(match.strip()):
+        if target_dir.startswith('..'):
+            target_dir = dirs['inner_font']
+        else:
+            target_dir = dirs['font']
 
     return matchObj.group(0).replace(match, target_dir + '/' + wk_target_name(match))
 
@@ -256,7 +268,7 @@ def run_download(url, base_url, base_name):
 
         save_basename = (k != 'page_image')
 
-        download_filse(files1, dirs[k], base_url, save_basename)
+        download_files(files1, dirs[k], base_url, save_basename)
 
         def replace_source_file_path(matchObj):
             """
@@ -283,7 +295,7 @@ def run_download(url, base_url, base_name):
                     continue
                 css_matches = inner_files['css']['pattern'].findall(css_content)
                 if css_matches:
-                    download_filse(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
+                    download_files(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
                     css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
                     file_put_contents('css/' + wk_target_name(css_file), css_content)
 

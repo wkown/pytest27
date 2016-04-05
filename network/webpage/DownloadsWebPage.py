@@ -192,7 +192,7 @@ def log(msg, log_file='download'):
     return file_put_contents('%s.log' % log_file, "[%s] %s\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), msg), 'ab')
 
 
-def replace_resource_path(matchObj, target_dir=''):
+def replace_resource_path(matchObj, target_dir='', origin_name=True):
     """
     替换资源文件目录
     :param matchObj:
@@ -212,7 +212,7 @@ def replace_resource_path(matchObj, target_dir=''):
         else:
             target_dir = dirs['font']
 
-    return matchObj.group(0).replace(match, target_dir + '/' + wk_target_name(match))
+    return matchObj.group(0).replace(match, target_dir + '/' + wk_target_name(match, origin_name))
 
 
 def replace_inner_source_file_path(matchObj):
@@ -276,7 +276,7 @@ def run_download(url, base_url, base_name):
             :param matchObj:
             :return:
             """
-            return replace_resource_path(matchObj, dirs[k])
+            return replace_resource_path(matchObj, dirs[k], save_basename)
             # match = matchObj.group(1)
             # if not match:
             #     return ''

@@ -251,6 +251,7 @@ def getCodeStr(result, target_charset='gbk'):
     except:
         pass
 
+on_save_basename = True
 
 def run_download(url, base_url, base_name):
     if not os.path.isdir('html'):
@@ -266,7 +267,10 @@ def run_download(url, base_url, base_name):
         if not files1:
             continue
 
-        save_basename = not (k == 'page_image' or k == 'css_image')
+        if on_save_basename:
+            save_basename = not (k == 'page_image')
+        else:
+            save_basename = on_save_basename
 
         download_files(files1, dirs[k], base_url, save_basename)
 

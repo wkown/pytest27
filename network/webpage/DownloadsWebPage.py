@@ -138,7 +138,7 @@ def file_put_contents(filename, content, mode='wb'):
     if content is None:
         return
     try:
-        f = open(getCodeStr(filename), 'wb')
+        f = open(getCodeStr(filename), mode)
         f.write(content)
         f.close()
     except IOError, e:
@@ -266,7 +266,7 @@ def run_download(url, base_url, base_name):
         if not files1:
             continue
 
-        save_basename = (k != 'page_image')
+        save_basename = not (k == 'page_image' or k == 'css_image')
 
         download_files(files1, dirs[k], base_url, save_basename)
 

@@ -33,6 +33,8 @@ font_ext = ('.ttf', '.eot', '.svg', '.woff', '.woff2')
 
 inner_files = {'css': {'pattern': re.compile('url\([\'\"]?(.*?)[\'\"]?\)', re.IGNORECASE), 'dir': '../images'}}
 
+on_save_basename = True
+
 
 def wk_target_name(v, origin_name=True):
     """
@@ -217,7 +219,7 @@ def replace_resource_path(matchObj, target_dir='', origin_name=True):
 
 
 def replace_inner_source_file_path(matchObj):
-    return replace_resource_path(matchObj, inner_files['css']['dir'])
+    return replace_resource_path(matchObj, inner_files['css']['dir'], on_save_basename)
 
 def getCodeStr(result, target_charset='gbk'):
     #gb2312
@@ -252,7 +254,6 @@ def getCodeStr(result, target_charset='gbk'):
     except:
         pass
 
-on_save_basename = True
 
 def run_download(url, base_url, base_name):
     if not os.path.isdir('html'):
@@ -300,9 +301,9 @@ def run_download(url, base_url, base_name):
                     continue
                 css_matches = inner_files['css']['pattern'].findall(css_content)
                 if css_matches:
-                    download_files(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url))
+                    download_files(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url), save_basename)
                     css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
-                    file_put_contents('css/' + wk_target_name(css_file), css_content)
+                    file_put_contents('css/' + wk_target_name(css_file, save_basename), css_content)
 
     file_put_contents(base_name, page_content)
     print "Download task is complete ^_^"

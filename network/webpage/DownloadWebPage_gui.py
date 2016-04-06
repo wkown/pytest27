@@ -52,7 +52,7 @@ class DownloadPanel(wx.Panel):
         self.defaultLocalTxt = u'可选择本地源文件...'
 
         mainSizer = wx.BoxSizer(wx.VERTICAL)
-        gridSizer = wx.GridBagSizer(vgap=3, hgap=4)
+        gridSizer = wx.GridBagSizer(vgap=4, hgap=4)
 
         textFieldSize = (500, -1)
         lblSize = (70, -1)
@@ -84,8 +84,17 @@ class DownloadPanel(wx.Panel):
         gridSizer.Add(self.txt_target_filename, pos=(2, 1), span=(1,3))
 
         #显示日志
+
         self.txt_log = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.Bind(EVT_DWP_PRINT, self.PrintLog)
+
+        #参数设置
+        self.lbl_target_filename = wx.StaticText(self, size=lblSize, label=u"附加参数:", style=wx.ALIGN_RIGHT)
+        gridSizer.Add(self.lbl_target_filename, pos=(3, 0), flag=wx.ALIGN_RIGHT)
+        self.checkbox_save_basename = wx.CheckBox(self, -1, u'保存路径名', style=wx.ALIGN_RIGHT)
+        gridSizer.Add(self.checkbox_save_basename, pos=(3, 1))
+        self.Bind(wx.EVT_CHECKBOX, self.OnSaveBasename, self.checkbox_save_basename)
+
 
         #下载按钮
         self.btn_download = wx.Button(self, label=u"下载")
@@ -143,6 +152,13 @@ class DownloadPanel(wx.Panel):
         if filename == '' or filename == self.defaultLocalTxt:
             return None
         return filename
+
+    def OnSaveBasename(self, evt):
+        w_dwp.on_save_basename = not evt.IsChecked()
+        if w_dwp.on_save_basename:
+            self.txt_log.WriteText(u'文件名存储方式:使用原始文件名保存\n')
+        else:
+            self.txt_log.WriteText(u'文件名存储方式:使用路径名转换文件名保存\n')
 
     def OnDownload(self, evt):
 

@@ -44,8 +44,9 @@ def wk_target_name(v, origin_name=True):
     filename = os.path.basename(v.strip())
 
     pos = filename.find('?')
-    if (pos) != -1:
+    if pos != -1:
         filename = filename[0: pos]
+
     if filename and not origin_name:
         path = os.path.dirname(v.strip()).replace('http://', '').replace('https://', '').replace('//', '').replace('..', '')
         filename = '%s-%s' % (path.replace('/', '-'), filename)
@@ -294,7 +295,7 @@ def run_download(url, base_url, base_name):
         if k == 'css':  # 如果是css 还要下载css中引用的文件
             for css_file in files1:
                 print 'css/' + wk_target_name(css_file)
-                css_content = file_get_contents('css/' + wk_target_name(css_file))
+                css_content = file_get_contents('css/' + wk_target_name(css_file, save_basename))
                 if css_content is None:
                     continue
                 css_matches = inner_files['css']['pattern'].findall(css_content)

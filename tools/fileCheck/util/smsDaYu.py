@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 import top.api
 import json
-from conf import load_config
 
 
 
@@ -31,6 +30,8 @@ def send_sms(phone_num, msg_param, sms_config):
     return True
 
 if __name__ == '__main__':
+    from conf import load_config
+
     conf = load_config()
     sms_config = {
         'appkey': conf.get('sms', 'appkey'),

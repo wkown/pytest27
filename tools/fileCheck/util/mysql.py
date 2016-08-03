@@ -24,39 +24,52 @@ class MySql:
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
     def insert(self, table, data=None):
-        sql = 'INSERT INTO ' + table +\
+        sql = 'INSERT INTO ' + table + \
               '(' + ','.join(data.iterkeys()) + ')' \
-              'VALUES (' + ','.join(data.itervalues()) + ')'
+                                                'VALUES ("' + '","'.join(data.itervalues()) + '")'
         return self.query(sql)
 
     def update(self, table, where=1, data=None):
-        set_val=''
-        conj=''
+        set_val = ''
+        conj = ''
         for k, v in data.items():
-            set_val = set_val + conj + "`" + k + "`= '" + v + "'"
+            set_val = set_val + conj + '`' + k + '`= "' + v + '"'
             conj = ','
-        sql = "UPDATE `" + table + "` SET " + set_val + " WHERE " + where + ";"
+        sql = 'UPDATE `' + table + '` SET ' + set_val + ' WHERE ' + self.wh(where) + ';'
         return self.query(sql)
 
     def delete(self, table, where=None):
         sql = "DELETE FROM `%s`" % table
         if where:
-            sql = sql + ' WHERE ' + where
+            sql = sql + ' WHERE ' + self.wh(where)
 
         return self.query(sql)
 
-    def fetchAll(self, table, where=1,order=None, offset=0, limit=20):
-        sql = 'SELECT * FROM ' + table + ' WHERE ' + where + ' LIMIT ' + str(offset) + ',' + str(limit)
+    def fetchAll(self, table, where='1', order=None, offset=0, limit=20):
+        sql = 'SELECT * FROM ' + table + ' WHERE ' + self.wh(where) + ' LIMIT ' + str(offset) + ',' + str(limit)
         self.query(sql)
         return self.cursor.fetchall()
 
-    def fetchOne(self, table, where=1,order=None, offset=0, limit=20):
-        sql = 'SELECT * FROM ' + table + ' WHERE ' + where + " LIMIT 1"
+    def fetchOne(self, table, where='1', order=None, offset=0, limit=20):
+        sql = 'SELECT * FROM ' + table + ' WHERE ' + self.wh(where) + " LIMIT 1"
         self.query(sql)
         return self.cursor.fetchone()
 
+    def wh(self, where=None):
+        if not where:
+            return ''
+        if isinstance(where, str):
+            return where
+        if isinstance(where, dict):
+            conj = ''
+            _wh = ''
+            for k, v in where.items():
+                _wh = _wh + conj + '`' + k + '`= "' + v + '"'
+                conj = ' AND '
+            return _wh
+
     def query(self, sql=''):
-        #print sql
+        # print sql
         rows_num = self.cursor.execute(sql)
         self.conn.commit()
         return rows_num

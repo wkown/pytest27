@@ -1,4 +1,4 @@
-# -*- coding:utf8 -*-
+# -*- coding:utf-8 -*-
 from mysql import MySql
 from smsDaYu import send_sms
 import os
@@ -103,9 +103,45 @@ def send_msg():
     发送短信消息
     :return:
     """
+    contacts = db.fetchAll(table='cf_contact', limit=100)
+
+    sms_cfg = dict(cfg.items('sms'))
+    print sms_cfg
+
+    sms_cfg = {
+        'appkey': cfg.get('sms', 'appkey'),
+        'secret': cfg.get('sms', 'secret'),
+        'sign_name': cfg.get('sms', 'sign_name'),
+        'template_code': cfg.get('sms', 'template_code'),
+    }
+    print sms_cfg
+
+    for info in contacts:
+        print info
+        if not info['mobile']:
+            continue
+
+        msg_page = 1
+        msg_per_page = 10
+        msg_where = 'msg_id > %s' % str(info['msg_id'])
+        while True:
+            msg_rows = db.fetchAll(table='cf_msg', where=msg_where, offset=(msg_page-1)*msg_per_page, limit=msg_per_page)
+            msg_page += 1
+            if not msg_rows:
+                break
+            for msg_row in msg_rows:
+                param = {
+                    'name': info['name'],
+                    'dirs': msg_row['dirs'],
+                    'num': str(msg_row['file_count']),
+                    'time': time.strftime('%Y-%m-%d')
+                }
+                result = send_sms(info['mobile'], param, sms_cfg)
+
 
 
 if __name__ == '__main__':
-    print 'add_file:', add_file('../target-file/original-01.html')
-    move_file('../target-file/original-01.html')
-    prepare_msg()
+    #print 'add_file:', add_file('../target-file/original-01.html')
+    #move_file('../target-file/original-01.html')
+    #prepare_msg()
+    send_msg()

@@ -44,9 +44,9 @@ def move_file(file_path):
         os.makedirs(isolate_dir)
     isolate_path = '%s/%s' % (isolate_dir, filename)
 
-    #shutil.move(file_path, isolate_path)
-    if os.path.isfile(file_path):
-        #where = 'path="%s"' % file_path
+    shutil.move(file_path, isolate_path)
+    if not os.path.isfile(file_path):
+        # where = 'path="%s"' % file_path
         where = {
             'path': file_path
         }
@@ -57,12 +57,55 @@ def move_file(file_path):
         return db.update('cf_file', where, data)
 
 
+def prepare_msg():
+    """
+    准备消息数据
+    :return:
+    """
+    file_count = dir_count = 0
+    dir_bag = set()
+    file_bag = set()
+    file_id = []
+    page = 1
+    per_page = 100
+
+    while True:
+        rows = db.fetchAll(table='cf_file', where={'msg_id': '0', 'status': '1'}, offset=(page - 1) * per_page,
+                           limit=per_page)
+        if not rows:
+            break
+        for row in rows:
+            file_bag.add(row['path'])
+            dir_bag.add(os.path.dirname(row['path']))
+            file_id.append(str(row['file_id']))
+        page += 1
+
+    file_count = len(file_bag)
+    dir_count = len(dir_bag)
+    if dir_count <= 0:
+        return None
+
+    dirs = ','.join(dir_bag)
+    curr_time = str(int(time.time()))
+    data = {'file_count': str(file_count), 'dir_count': str(dir_count), 'dirs': dirs, 'modified': curr_time,
+            'dateline': curr_time}
+
+    msg_id = db.insert('cf_msg', data)
+    if msg_id <= 0:
+        return None
+
+    where = 'file_id in(%s)' % ','.join(file_id)
+    db.update('cf_file', where, {'msg_id': str(msg_id)})
+
+
 def send_msg():
     """
     发送短信消息
     :return:
     """
 
+
 if __name__ == '__main__':
-    add_file('../target-file/original-01.html')
+    print 'add_file:', add_file('../target-file/original-01.html')
     move_file('../target-file/original-01.html')
+    prepare_msg()

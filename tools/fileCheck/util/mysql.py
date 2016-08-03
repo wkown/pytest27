@@ -18,7 +18,7 @@ class MySql:
     def connect(self, host='localhost', user='root', passwd='', db='', charset='utf8', port=3306):
         try:
             self.conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db, charset=charset, port=port)
-            self.cursor = self.conn.cursor()
+            self.cursor = self.conn.cursor(MySQLdb.cursors.DictCursor)
         except MySQLdb.Error, e:
             self.conn = None
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
@@ -27,7 +27,11 @@ class MySql:
         sql = 'INSERT INTO ' + table + \
               '(' + ','.join(data.iterkeys()) + ')' \
                                                 'VALUES ("' + '","'.join(data.itervalues()) + '")'
-        return self.query(sql)
+        rows = self.query(sql)
+        if rows > 0:
+            return self.cursor.lastrowid
+        return 0
+
 
     def update(self, table, where=1, data=None):
         set_val = ''

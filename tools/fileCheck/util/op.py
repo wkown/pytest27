@@ -5,6 +5,10 @@ import os
 import conf
 import shutil
 import time
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 cfg = conf.load_config('main')
 

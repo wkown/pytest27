@@ -7,7 +7,7 @@ sign_style = {
     'html': '<!--sign{%s}-->'
 }
 sign_re = {
-    'html': '<!--sign{.*?}-->'
+    'html': '<!--sign\{(.*?)\}-->'
 }
 
 
@@ -58,11 +58,7 @@ def retrieve_sign(content, filename=None):
         return None
 
     sign_str = match.group(0)
-    match = re.search('\{(.*?)\}', sign_str)
-
-    sign_ret = ''
-    if match:
-        sign_ret = match.group(1)
+    sign_ret = match.group(1)
 
     return sign_str, sign_ret
 

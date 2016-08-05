@@ -55,7 +55,7 @@ def retrieve_sign(content, filename=None):
     f_type = 'html'
     match = re.search(sign_re[f_type], content)
     if not match:
-        return None
+        return None, None
 
     sign_str = match.group(0)
     sign_ret = match.group(1)
@@ -97,14 +97,22 @@ def sign_check(file_path):
     :param file_path:
     :return:
     """
+    if not os.path.isfile(file_path):
+        return True
+
     result = False
     filename = os.path.basename(file_path)
 
     f = open(file_path, 'rb')
     content = f.read()
     f.close()
+    if not content:
+        return True
 
     sign_str, sign_ret = retrieve_sign(content)
+    if sign_str is None or sign_ret is None:
+        return False
+
     content = content.replace(sign_str, '')
     sign_val = sign(filename, content)
     if sign_ret == sign_val:

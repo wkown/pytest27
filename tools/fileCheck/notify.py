@@ -14,15 +14,34 @@ class EventHandler(ProcessEvent):
     """事件处理"""
 
     def process_IN_CREATE(self, event):
-        file_path = os.path.join(event.path, event.name)
-        file_path = os.path.abspath(file_path)
+        file_path = os.path.abspath(os.path.join(event.path, event.name))
+        self.check_file(file_path)
         print "Create file: %s " % file_path
 
     def process_IN_DELETE(self, event):
-        print "Delete file: %s " % os.path.join(event.path, event.name)
+        file_path = os.path.abspath(os.path.join(event.path, event.name))
+        print "Delete file: %s " % file_path
 
     def process_IN_MODIFY(self, event):
-        print "Modify file: %s " % os.path.join(event.path, event.name)
+        file_path = os.path.abspath(os.path.join(event.path, event.name))
+        self.check_file(file_path)
+        print "Modify file: %s " % file_path
+
+    def check_file(self, file_path):
+        """
+        检查文件合法性
+        :param file_path:
+        :return:
+        """
+        if not os.path.isfile(file_path):
+            return True
+
+        result = sign.sign_check(file_path)
+        if not result:
+            print '文件签名错误:%s' % file_path
+            return result
+        print '文件签名正确:%s' % file_path
+        return result
 
 
 def FSMonitor(path='.'):

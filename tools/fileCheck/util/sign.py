@@ -30,7 +30,7 @@ def sign2file(sign_val, file_path, target_file=None):
 
     sign_val = sign_style[file_type] % sign_val
 
-    f = open(file_path)
+    f = open(file_path, 'rb')
     content = f.read()
     f.close()
 
@@ -72,7 +72,7 @@ def sign_file(file_path):
 
     filename = os.path.basename(file_path)
 
-    f = open(file_path)
+    f = open(file_path, 'rb')
     content = f.read()
     f.close()
 
@@ -100,7 +100,7 @@ def sign_check(file_path):
     result = False
     filename = os.path.basename(file_path)
 
-    f = open(file_path)
+    f = open(file_path, 'rb')
     content = f.read()
     f.close()
 

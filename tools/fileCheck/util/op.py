@@ -10,7 +10,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-cfg = conf.load_config('main')
+curr_path = os.path.dirname(__file__)
+
+cfg = conf.load_config('main', curr_path+'/../config')
 
 db_cfg = dict(cfg.items('db'))
 db = MySql()
@@ -74,7 +76,7 @@ def prepare_msg():
     per_page = 100
 
     while True:
-        rows = db.fetchAll(table='cf_file', where={'msg_id': '0', 'status': '1'}, offset=(page - 1) * per_page,
+        rows = db.fetchAll(table='cf_file', where={'msg_id': '0', 'status': '0'}, offset=(page - 1) * per_page,
                            limit=per_page)
         if not rows:
             break
@@ -128,9 +130,9 @@ def send_msg():
             for msg_row in msg_rows:
                 param = {
                     'name': info['name'],
-                    'dirs': msg_row['dirs'],
+                    #'dirs': msg_row['dirs'],
                     'num': str(msg_row['file_count']),
-                    'time': time.strftime('%Y-%m-%d')
+                    'time': time.strftime('%m-%d %H:%M:%S')
                 }
                 result = send_sms(info['mobile'], param, sms_cfg)
                 if result:

@@ -2,6 +2,7 @@
 #  -*- coding:utf-8 -*-
 import os
 import util.sign as sign
+import util.op as op
 from  pyinotify import WatchManager, Notifier, \
     ProcessEvent, IN_DELETE, IN_CREATE, IN_MODIFY
 
@@ -15,7 +16,7 @@ class EventHandler(ProcessEvent):
 
     def process_IN_CREATE(self, event):
         file_path = os.path.abspath(os.path.join(event.path, event.name))
-        self.check_file(file_path)
+        #self.check_file(file_path)
         print "Create file: %s " % file_path
 
     def process_IN_DELETE(self, event):
@@ -33,12 +34,14 @@ class EventHandler(ProcessEvent):
         :param file_path:
         :return:
         """
-        if not os.path.isfile(file_path):
+        if (not file_path.endswith('.html')) or (not os.path.isfile(file_path)):
+            print 'file(%s) is not html file or file is not exist' % file_path
             return True
 
         result = sign.sign_check(file_path)
         if not result:
             print '文件签名错误:%s' % file_path
+            op.add_file(file_path)
             return result
         print '文件签名正确:%s' % file_path
         return result

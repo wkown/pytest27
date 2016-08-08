@@ -70,6 +70,6 @@ if __name__ == "__main__":
     import util.conf as conf
 
     curr_path = os.path.dirname(__file__)
-    cfg = conf.load_config('main', curr_path + '/../config')
+    cfg = conf.load_config('main', curr_path + '/config')
 
     FSMonitor(cfg.get('file', 'notify_dir'))

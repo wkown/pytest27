@@ -11,6 +11,10 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 curr_path = os.path.dirname(__file__)
+if not curr_path:
+    curr_path = os.getcwd()
+    if not curr_path.endswith('util'):
+        curr_path += '/util'
 
 cfg = conf.load_config('main', curr_path+'/../config')
 

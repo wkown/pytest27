@@ -53,8 +53,12 @@ def FSMonitor(path='.'):
     wm = WatchManager()
     mask = IN_DELETE | IN_CREATE | IN_MODIFY | IN_CLOSE_WRITE
     notifier = Notifier(wm, EventHandler())
-    wm.add_watch(path, mask, auto_add=True, rec=True)
-    print 'now starting monitor: %s' % path
+    paths = path.split(';')
+    for path in paths:
+        if not path:
+            continue
+        wm.add_watch(path, mask, auto_add=True, rec=True)
+        print 'now starting monitor: %s' % path
     while True:
         try:
             notifier.process_events()

@@ -71,12 +71,5 @@ def FSMonitor(path='.'):
 
 
 if __name__ == "__main__":
-    import util.conf as conf
-
-    curr_path = os.path.dirname(__file__)
-    if not curr_path:
-        curr_path = os.getcwd()
-    print curr_path
-    cfg = conf.load_config('main', curr_path + '/config')
-
+    cfg = op.cfg
     FSMonitor(cfg.get('file', 'notify_dir'))

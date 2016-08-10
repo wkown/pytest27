@@ -1,0 +1,1 @@
+ALTER TABLE `cf_file` ADD COLUMN `channel_id` INT UNSIGNED DEFAULT 0 NOT NULL COMMENT '频道id' AFTER `msg_id`;

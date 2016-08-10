@@ -22,6 +22,11 @@ db_cfg = dict(cfg.items('db'))
 db = MySql()
 db.connect(db_cfg['host'], db_cfg['user'], db_cfg['pwd'], db_cfg['db'], db_cfg['charset'], int(db_cfg['port']))
 
+# 调整监控目录配置
+if cfg.get('file', 'notify_dir_source') == 'db' and cfg.get('common', 'client_id') > 0:
+    pass
+
+
 
 def add_file(file_path):
     """
@@ -66,6 +71,11 @@ def move_file(file_path):
         }
         return db.update('cf_file', where, data)
 
+def get_notify_dirs():
+    """
+    获取
+    :return:
+    """
 
 def prepare_msg():
     """

@@ -105,10 +105,8 @@ def prepare_msg():
     if dir_count <= 0:
         return None
 
-    dirs = ','.join(dir_bag)
     curr_time = str(int(time.time()))
-    data = {'file_count': str(file_count), 'dir_count': str(dir_count), 'dirs': dirs, 'modified': curr_time,
-            'dateline': curr_time}
+    data = {'file_count': str(file_count), 'dir_count': str(dir_count),  'modified': curr_time, 'dateline': curr_time}
 
     msg_id = db.insert('cf_msg', data)
     if msg_id <= 0:

@@ -22,9 +22,26 @@ db_cfg = dict(cfg.items('db'))
 db = MySql()
 db.connect(db_cfg['host'], db_cfg['user'], db_cfg['pwd'], db_cfg['db'], db_cfg['charset'], int(db_cfg['port']))
 
+
+notify_info = dict()
+
+
+def get_notify_dirs():
+    """
+    获取
+    :return:
+    """
+    client_id = cfg.get('common', 'client_id')
+    if client_id <= 0:
+        print 'err'
+    rows = db.fetchAll('cf_channel', {'monitorid': client_id}, None, 0, 100)
+    dirs = set()
+    for row in rows:
+        dirs.add(row['directory'])
+    return rows,dirs
 # 调整监控目录配置
 if cfg.get('file', 'notify_dir_source') == 'db' and cfg.get('common', 'client_id') > 0:
-    pass
+    print get_notify_dirs()
 
 
 
@@ -71,11 +88,6 @@ def move_file(file_path):
         }
         return db.update('cf_file', where, data)
 
-def get_notify_dirs():
-    """
-    获取
-    :return:
-    """
 
 def prepare_msg():
     """
@@ -161,4 +173,5 @@ if __name__ == '__main__':
     #print 'add_file:', add_file('../target-file/original-01.html')
     #move_file('../target-file/original-01.html')
     #prepare_msg()
-    send_msg()
+    #send_msg()
+    pass

@@ -32,6 +32,15 @@ class MySql:
             return self.cursor.lastrowid
         return 0
 
+    def replace(self, table, data=None):
+        sql = 'REPLACE INTO ' + table + \
+              '(' + ','.join(data.iterkeys()) + ')' \
+                                                'VALUES ("' + '","'.join(data.itervalues()) + '")'
+        rows = self.query(sql)
+        if rows > 0:
+            return self.cursor.lastrowid
+        return 0
+
 
     def update(self, table, where=1, data=None):
         set_val = ''

@@ -71,7 +71,7 @@ def add_file(file_path):
             data['channel_id'] = str(info['id'])
             break
 
-    return db.insert('cf_file', data)
+    return db.replace('cf_file', data)
 
 
 def move_file(file_path):
@@ -92,7 +92,7 @@ def move_file(file_path):
     if not os.path.isfile(file_path):
         # where = 'path="%s"' % file_path
         where = {
-            'path': file_path
+            'path_md5': md5(file_path)
         }
         data = {
             'isolate_path': isolate_path,

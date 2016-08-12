@@ -59,10 +59,16 @@ def add_file(file_path):
         return
 
     data = {
+        'channel_id': '0',
         'path': file_path,
         'dir': os.path.dirname(file_path),
         'status': '0'
     }
+    for info in notify_info:
+        if file_path.startswith(info['directory']):
+            data['channel_id'] = str(info['id'])
+            break
+
     return db.insert('cf_file', data)
 
 

@@ -50,8 +50,13 @@ class EventHandler(ProcessEvent):
 
 
 def FSMonitor(path='.'):
+    if len(path) <= 0:
+        print 'There is no folder to monitor,Bye!'
+        return
+
     wm = WatchManager()
-    mask = IN_DELETE | IN_CREATE | IN_MODIFY | IN_CLOSE_WRITE
+    # IN_DELETE | IN_CREATE | IN_MODIFY | IN_CLOSE_WRITE
+    mask = IN_CLOSE_WRITE
     notifier = Notifier(wm, EventHandler())
     paths = path.split(';')
     for path in paths:

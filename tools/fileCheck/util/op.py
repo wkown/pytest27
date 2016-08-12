@@ -28,7 +28,7 @@ notify_info = dict()
 
 def get_notify_dirs():
     """
-    获取
+    获取数据库监控目录
     :return:
     """
     client_id = cfg.get('common', 'client_id')
@@ -41,7 +41,11 @@ def get_notify_dirs():
     return rows,dirs
 # 调整监控目录配置
 if cfg.get('file', 'notify_dir_source') == 'db' and cfg.get('common', 'client_id') > 0:
-    print get_notify_dirs()
+    notify_info, dirs=get_notify_dirs()
+    if len(dirs) > 0:
+        cfg.set('file', 'notify_dir', ';'.join(dirs))
+    else:
+        cfg.set('file', 'notify_dir', '')
 
 
 

@@ -65,7 +65,7 @@ def add_file(file_path):
         'dir': os.path.dirname(file_path),
         'status': '0'
     }
-    data['path_md5'] = md5(data['dir'])
+    data['path_md5'] = md5(data['path'])
     for info in notify_info:
         if file_path.startswith(info['directory']):
             data['channel_id'] = str(info['id'])

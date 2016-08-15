@@ -3,6 +3,7 @@
 import os
 import util.sign as sign
 import util.op as op
+import traceback
 from  pyinotify import WatchManager, Notifier, \
     ProcessEvent, IN_DELETE, IN_CREATE, IN_MODIFY, IN_CLOSE_WRITE
 
@@ -81,4 +82,10 @@ def FSMonitor(path='.'):
 
 if __name__ == "__main__":
     cfg = op.cfg
-    FSMonitor(cfg.get('file', 'notify_dir'))
+
+    # 守护总是从异常恢复
+    while True:
+        try:
+            FSMonitor(cfg.get('file', 'notify_dir'))
+        except Exception, e:
+            traceback.print_exc()

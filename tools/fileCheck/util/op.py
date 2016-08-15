@@ -83,10 +83,23 @@ def move_file(file_path):
     if not os.path.isfile(file_path):
         return
     filename = os.path.basename(file_path)
-    isolate_dir = '%s/%s' % (cfg.get('file', 'isolate_dir'), time.strftime('%Y%m/%d'))
+
+    domain = 'unknown'
+    for info in notify_info:
+        if file_path.startswith(info['directory']):
+            if info['domainname']:
+                domain = str(info['domainname'])
+            break
+
+    isolate_dir = '%s/%s/%s/' % (cfg.get('file', 'isolate_dir'), time.strftime('%Y%m/%d'), domain)
+
+    if not os.path.isdir(isolate_dir) and not isolate_dir.startswith('/'):
+        isolate_dir = '%s/%s' % (curr_path, isolate_dir)
+
     if not os.path.isdir(isolate_dir):
         os.makedirs(isolate_dir)
-    isolate_path = '%s/%s' % (isolate_dir, filename)
+
+    isolate_path = '%s/%s' % (os.path.realpath(isolate_dir), filename)
 
     shutil.move(file_path, isolate_path)
     if not os.path.isfile(file_path):
@@ -96,7 +109,8 @@ def move_file(file_path):
         }
         data = {
             'isolate_path': isolate_path,
-            'status': '1'
+            'status': '1',
+            'modified': str(int(time.time()))
         }
         return db.update('cf_file', where, data)
 

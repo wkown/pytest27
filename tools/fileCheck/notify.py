@@ -44,6 +44,7 @@ class EventHandler(ProcessEvent):
         if not result:
             print 'sign file error:%s' % file_path
             op.add_file(file_path)
+            op.move_file(file_path)
             return result
         print 'sign file ok:%s' % file_path
         return result

@@ -55,6 +55,9 @@ def FSMonitor(path='.'):
         print 'There is no folder to monitor,Bye!'
         return
 
+    if isinstance(path,unicode):
+        path = path.encode('utf-8')
+
     wm = WatchManager()
     # IN_DELETE | IN_CREATE | IN_MODIFY | IN_CLOSE_WRITE
     mask = IN_CLOSE_WRITE

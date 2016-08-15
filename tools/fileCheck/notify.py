@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #  -*- coding:utf-8 -*-
 import os
+from multiprocessing import Process
+import time
 import util.sign as sign
 import util.op as op
 import traceback
@@ -14,41 +16,37 @@ from  pyinotify import WatchManager, Notifier, \
 class EventHandler(ProcessEvent):
     """事件处理"""
 
-    def process_IN_CREATE(self, event):
-        file_path = os.path.abspath(os.path.join(event.path, event.name))
-        print "Create file: %s " % file_path
-
     def process_IN_DELETE(self, event):
         file_path = os.path.abspath(os.path.join(event.path, event.name))
         print "Delete file: %s " % file_path
 
-    def process_IN_MODIFY(self, event):
-        file_path = os.path.abspath(os.path.join(event.path, event.name))
-        print "Modify file: %s " % file_path
-
     def process_IN_CLOSE_WRITE(self,event):
         file_path = os.path.abspath(os.path.join(event.path, event.name))
-        print "Close file: %s " % file_path
-        self.check_file(file_path)
+        p = Process(target=check_file, args=(file_path,))
+        p.start()
+        p.join()
 
-    def check_file(self, file_path):
-        """
-        检查文件合法性
-        :param file_path:
-        :return:
-        """
-        if (not file_path.endswith('.html')) or (not os.path.isfile(file_path)):
-            print 'file(%s) is not html file or file is not exist' % file_path
-            return True
 
-        result = sign.sign_check(file_path)
-        if not result:
-            print 'sign file error:%s' % file_path
-            op.add_file(file_path)
-            op.move_file(file_path)
-            return result
-        print 'sign file ok:%s' % file_path
+def check_file(file_path):
+    """
+    检查文件合法性
+    :param file_path:
+    :return:
+    """
+    time.sleep(2)
+    print "Close file: %s " % file_path
+    if (not file_path.endswith('.html')) or (not os.path.isfile(file_path)):
+        print 'file(%s) is not html file or file is not exist' % file_path
+        return True
+
+    result = sign.sign_check(file_path)
+    if not result:
+        print 'sign file error:%s' % file_path
+        op.add_file(file_path)
+        op.move_file(file_path)
         return result
+    print 'sign file ok:%s' % file_path
+    return result
 
 
 def FSMonitor(path='.'):

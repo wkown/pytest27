@@ -59,11 +59,14 @@ def add_file(file_path):
     if not os.path.isfile(file_path):
         return
 
+    t = str(int(time.time()))
     data = {
         'channel_id': '0',
         'path': file_path,
         'dir': os.path.dirname(file_path),
-        'status': '0'
+        'status': '0',
+        'modified': t,
+        'dateline': t
     }
     data['path_md5'] = md5(data['path'])
     for info in notify_info:

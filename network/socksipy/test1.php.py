@@ -2,10 +2,18 @@
 __author__ = 'walkskyer'
 """
 """
+import win_inet_pton
 import socks
 import socket
-import urllib
-socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, "127.0.0.1", 16000)
+import urllib2
+
+proxy_address = raw_input('proxy address:')
+if not proxy_address:
+    proxy_address = '127.0.0.1:17000'
+
+proxy_address = proxy_address.split(':')
+print proxy_address
+socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, proxy_address[0], int(proxy_address[1]))
 socket.socket = socks.socksocket
 
 if __name__ == "__main__":
@@ -14,8 +22,10 @@ if __name__ == "__main__":
         if not url:
             continue
         try:
-            resp = urllib.urlopen('http://%s' % url)
-            print 'result:',resp.read()[:200]
+            resp = urllib2.urlopen('http://%s' % url)
+            s = resp.read()
+            print 'len:', len(s)
+            print 'result:',s#[:200]
             print "\n"
         except Exception, e:
             print e

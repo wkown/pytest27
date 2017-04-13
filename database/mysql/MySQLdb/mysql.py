@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 # filename:mysql.py
 # datetime:2014-04-02 17:38
-__author__ = 'walkskyer'
-"""
-我自己封装的mysql适配器
-"""
 import MySQLdb
 
+__author__ = 'walkskyer'
 
-class MySql():
+"""
+mysqldb封装适配器
+"""
+
+
+class MySql:
     def __init__(self):
         self.conn = None
         self.cursor = None
@@ -25,7 +27,7 @@ class MySql():
         sql = 'INSERT INTO ' + table +\
               '(' + ','.join(data.iterkeys()) + ')' \
               'VALUES (' + ','.join(data.itervalues()) + ')'
-        self.query(sql)
+        return self.query(sql)
 
     def update(self, table, where=1, data=None):
         set_val=''
@@ -34,10 +36,14 @@ class MySql():
             set_val = set_val + conj + "`" + k + "`= '" + v + "'"
             conj = ','
         sql = "UPDATE `" + table + "` SET " + set_val + " WHERE " + where + ";"
-        self.query(sql)
+        return self.query(sql)
 
     def delete(self, table, where=None):
-        pass
+        sql = "DELETE FROM `%s`" % table
+        if where:
+            sql = sql + ' WHERE ' + where
+
+        return self.query(sql)
 
     def fetchAll(self, table, where=1,order=None, offset=0, limit=20):
         sql = 'SELECT * FROM ' + table + ' WHERE ' + where + ' LIMIT ' + str(offset) + ',' + str(limit)
@@ -51,8 +57,9 @@ class MySql():
 
     def query(self, sql=''):
         #print sql
-        self.cursor.execute(sql)
+        rows_num = self.cursor.execute(sql)
         self.conn.commit()
+        return rows_num
 
     def close(self):
         self.cursor.close()

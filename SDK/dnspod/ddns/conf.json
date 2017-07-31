@@ -1,0 +1,13 @@
+{
+  "account": {
+    "login_token":""
+  },
+  "domains": [
+    {
+      "domain_id": "1",
+      "record_id": "2",
+      "sub_domain": "test",
+      "full_domain":""
+    }
+  ]
+}

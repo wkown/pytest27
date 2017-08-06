@@ -46,21 +46,20 @@ params = dict(
     record_line="默认",
 )
 """
-current_ip = None
 
 if __name__ == '__main__':
     try:
         ip = getip()
         print ip
-        if current_ip != ip:
-            params['ip'] = ip
-            for domain in conf['domains']:
-                params['domain_id'] = domain['domain_id']
-                params['record_id'] = domain['record_id']
-                params['sub_domain'] = domain['sub_domain']
-                print domain['full_domain'], ':', getdomainip(domain['full_domain'])
-                #if ddns(params):
-                #    current_ip = ip
+        params['ip'] = ip
+        for domain in conf['domains']:
+            #print domain['full_domain'], ':', getdomainip(domain['full_domain'])
+            if ip == getdomainip(domain['full_domain']):
+                continue
+            params['domain_id'] = domain['domain_id']
+            params['record_id'] = domain['record_id']
+            params['sub_domain'] = domain['sub_domain']
+            ddns(params)
     except Exception, e:
         print e
         pass

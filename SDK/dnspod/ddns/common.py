@@ -28,7 +28,7 @@ def getip():
 
 def getdomainip(domain):
     try:
-        return socket.getaddrinfo(domain, None)
+        return socket.getaddrinfo(domain, None)[0][4][0]
     except Exception, e:
         print e
         return ''

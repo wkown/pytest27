@@ -7,6 +7,6 @@ from wxpy import *
 
 
 if __name__ == "__main__":
+    bot = Bot(cache_path='cache/wxpy.pkl')
     embed()
-    bot = Bot()
     bot.file_helper.send('hello world')

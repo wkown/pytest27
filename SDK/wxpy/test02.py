@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 __author__ = 'walkskyer'
 """
+简单的接收和处理消息测试
 """
 from wxpy import *
 import time

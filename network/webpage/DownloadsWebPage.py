@@ -89,9 +89,9 @@ def download_files(file_list, dir, base_url='', origin_name=True):
     :param origin_name:
     :return:
     """
-    if not os.path.isdir(dir):
-        print 'curr dir: %s and I will make dir£º %s\n' % (os.getcwd(), dir)
-        os.mkdir(dir)
+    if not os.path.isdir(target_root_dir+'/'+dir):
+        print 'curr dir: %s and I will make dir£º %s\n' % (os.getcwd(), target_root_dir+'/'+dir)
+        os.mkdir(target_root_dir+'/'+dir)
 
     for v in file_list:
         filename = wk_target_name(v.strip(), origin_name)
@@ -113,6 +113,8 @@ def download_file(filename, target_url, base_url=''):
     :param base_url:
     :return:
     """
+
+    filename = target_root_dir + '/' + filename
     if not os.path.isdir(os.path.dirname(filename)):
         print 'curr dir: %s and I will make dir£º %s\n' % (os.getcwd(), dir)
         os.mkdir(os.path.dirname(filename))
@@ -259,7 +261,7 @@ def getCodeStr(result, target_charset='gbk'):
 def run_download(url, base_url, base_name):
     if not os.path.isdir(target_root_dir):
         os.mkdir(target_root_dir)
-    os.chdir(target_root_dir)
+    #os.chdir(target_root_dir)
 
     page_content = file_get_contents(url)
 
@@ -306,11 +308,11 @@ def run_download(url, base_url, base_name):
                     css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
                     file_put_contents('css/' + wk_target_name(css_file, save_basename), css_content)
 
-    file_put_contents(base_name, page_content)
+    file_put_contents(target_root_dir + '/' +base_name, page_content)
     print "Download task is complete ^_^"
     print "*********************************************************************************************************"
     print os.getcwd()
-    os.chdir('..')
+    #os.chdir('..')
     print os.getcwd()
 
 if __name__ == "__main__":

@@ -14,6 +14,7 @@ import sys
 import time
 
 socket.setdefaulttimeout(30)
+target_root_dir = 'html'
 
 pattern = {
     'js': re.compile(r'<script.*?src=[\'\"](.*?)[\'\"].*?</script>', re.IGNORECASE),
@@ -256,9 +257,9 @@ def getCodeStr(result, target_charset='gbk'):
 
 
 def run_download(url, base_url, base_name):
-    if not os.path.isdir('html'):
-        os.mkdir('html')
-    os.chdir('html')
+    if not os.path.isdir(target_root_dir):
+        os.mkdir(target_root_dir)
+    os.chdir(target_root_dir)
 
     page_content = file_get_contents(url)
 

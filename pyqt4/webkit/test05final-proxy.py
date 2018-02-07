@@ -91,9 +91,9 @@ if __name__ == "__main__":
 
     proxy = QtNetwork.QNetworkProxy()
     proxy.setType(QtNetwork.QNetworkProxy.Socks5Proxy)
-    proxy.setHostName('localhost');
+    proxy.setHostName('localhost')
     proxy.setPort(18000)
-    QtNetwork.QNetworkProxy.setApplicationProxy(proxy);
+    QtNetwork.QNetworkProxy.setApplicationProxy(proxy)
 
     grid = QGridLayout()
     browser = QWebView()

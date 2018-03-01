@@ -28,7 +28,8 @@ dirs = {'js': 'js',
         'css_image': 'images',
         'font': 'fonts',
         'inner_css': '../images',
-        'inner_font': '../fonts'
+        'inner_font': '../fonts',
+        'inner_import_css': '.',
 }
 font_ext = ('.ttf', '.eot', '.svg', '.woff', '.woff2')
 
@@ -103,6 +104,9 @@ def download_files(file_list, dir, base_url='', origin_name=True):
         if is_font_file(filename):
             download_file(dirs['font'] + '/' + filename, v, base_url)
             continue
+        if filename.endswith('.css'):
+            download_file(dirs['css'] + '/' + filename, v, base_url)
+            continue
         download_file(dir + '/' + filename, v, base_url)
 
 
@@ -168,6 +172,8 @@ def file_get_contents(url):
             print "file %s download error: %s" % (url, e)
             log(msg)
             return None
+
+    url = target_root_dir + '/' + url
     if not os.path.isfile(url):
         return
     f = open(url, 'rb')
@@ -196,7 +202,7 @@ def log(msg, log_file='download'):
     if isinstance(msg, unicode):
         msg = msg.encode('utf-8', 'ignore')
 
-    return file_put_contents('%s.log' % log_file, "[%s] %s\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), msg), 'ab')
+    return file_put_contents(target_root_dir + '/' + '%s.log' % log_file, "[%s] %s\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), msg), 'ab')
 
 
 def replace_resource_path(matchObj, target_dir='', origin_name=True):
@@ -206,18 +212,21 @@ def replace_resource_path(matchObj, target_dir='', origin_name=True):
     :param target_dir:
     :return:
     """
-    match = matchObj.group(1)
+    match = matchObj.group(1).strip()
     if not match:
         return ''
 
-    if match.strip().startswith('data:image'):
+    if match.startswith('data:image'):
         return matchObj.group(0)
 
-    if is_font_file(match.strip()):
+    if is_font_file(match):
         if target_dir.startswith('..'):
             target_dir = dirs['inner_font']
         else:
             target_dir = dirs['font']
+
+    if match.endswith('.css') and target_dir.startswith('..'):
+            target_dir = dirs['inner_import_css']
 
     return matchObj.group(0).replace(match, target_dir + '/' + wk_target_name(match, origin_name))
 
@@ -273,6 +282,15 @@ def run_download(url, base_url, base_name):
         if not files1:
             continue
 
+        # link 不一定是css
+        if k == 'css':
+            filesTemp= []
+            for tFilename in files1:
+                if wk_target_name(tFilename.strip()).endswith('.css'):
+                    filesTemp.append(tFilename)
+            print 'Css Files:',  filesTemp
+            files1 = filesTemp
+
         if on_save_basename:
             save_basename = not (k == 'page_image')
         else:
@@ -299,6 +317,8 @@ def run_download(url, base_url, base_name):
 
         if k == 'css':  # 如果是css 还要下载css中引用的文件
             for css_file in files1:
+                if not css_file.endswith('.css'):
+                    continue
                 print 'css/' + wk_target_name(css_file)
                 css_content = file_get_contents('css/' + wk_target_name(css_file, save_basename))
                 if css_content is None:
@@ -307,7 +327,7 @@ def run_download(url, base_url, base_name):
                 if css_matches:
                     download_files(css_matches, dirs['css_image'], real_url(os.path.dirname(css_file), base_url), save_basename)
                     css_content = inner_files['css']['pattern'].sub(replace_inner_source_file_path, css_content)
-                    file_put_contents('css/' + wk_target_name(css_file, save_basename), css_content)
+                    file_put_contents(target_root_dir + '/' + 'css/' + wk_target_name(css_file, save_basename), css_content)
 
     file_put_contents(target_root_dir + '/' +base_name, page_content)
     print "Download task is complete ^_^"

@@ -34,6 +34,7 @@ font_ext = ('.ttf', '.eot', '.svg', '.woff', '.woff2')
 
 inner_files = {'css': {'pattern': re.compile('url\([\'\"]?(.*?)[\'\"]?\)', re.IGNORECASE), 'dir': '../images'}}
 
+# 是否使用原始文件名保存文件，如果否将在网页中的路径转换成文件名保存。
 on_save_basename = True
 
 

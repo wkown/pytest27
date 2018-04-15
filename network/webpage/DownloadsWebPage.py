@@ -65,21 +65,31 @@ def real_url(uri, base_url=''):
     :param base_url:
     :return:
     """
-    if uri.find('http://') == 0 or uri.find('https://') == 0:
+    try:
+        if uri.find('http://') == 0 or uri.find('https://') == 0:
+            return uri
+        if uri.startswith('//'):
+            return 'http:%s' % uri
+
+        url_info = urlparse(base_url)
+        root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
+
+        if uri == '.' or not uri:
+            uri = base_url
+        elif uri[0] == '/':
+            uri = root_path + uri
+        else:
+            uri = base_url + '/' + uri
         return uri
-    if uri.startswith('//'):
-        return 'http:%s' % uri
+    except Exception, e:
+        # charset error try again
+        print e
+        if not isinstance(uri,'unicode'):
+            return real_url(getCodeStr(uri,'utf-8').decode('utf-8'), base_url)
+        return ''
 
-    url_info = urlparse(base_url)
-    root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
 
-    if uri == '.' or not uri:
-        uri = base_url
-    elif uri[0] == '/':
-        uri = root_path + uri
-    else:
-        uri = base_url + '/' + uri
-    return uri
+
 
 
 def download_files(file_list, dir, base_url='', origin_name=True):

@@ -164,7 +164,7 @@ def file_get_contents(url):
     """
     if url.find('http://') != -1 or url.find('https://') != -1:
         try:
-            req = urllib2.Request(url,None,{'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0'})
+            req = urllib2.Request(url,None,{'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0'})
             return urllib2.urlopen(req).read()
             #return urllib.urlopen(url).read()
         except Exception, e:
@@ -173,7 +173,8 @@ def file_get_contents(url):
             log(msg)
             return None
 
-    url = target_root_dir + '/' + url
+    if not os.path.isfile(url):
+        url = target_root_dir + '/' + url
     if not os.path.isfile(url):
         return
     f = open(url, 'rb')

@@ -73,12 +73,16 @@ def real_url(uri, base_url=''):
     url_info = urlparse(base_url)
     root_path = '%s://%s' % (url_info.scheme, url_info.netloc)
 
-    if uri == '.' or not uri:
-        uri = base_url
-    elif uri[0] == '/':
-        uri = root_path + uri
-    else:
-        uri = base_url + '/' + uri
+    try:
+        if uri == '.' or not uri:
+            uri = base_url
+        elif uri[0] == '/':
+            uri = root_path + uri
+        else:
+            uri = base_url + '/' + uri
+    except Exception, e:
+        log(e)
+        return real_url(getCodeStr(uri, 'utf-8').decode('utf-8'), base_url)
     return uri
 
 
@@ -134,6 +138,9 @@ def download_file(filename, target_url, base_url=''):
 
     target_url = target_url.strip().replace('\'', '').replace('"', '')
     target_url = real_url(target_url, base_url)
+
+    if not target_url:
+        return
 
     print "download: %s \n" % target_url
     file_put_contents(filename, file_get_contents(target_url))
@@ -235,7 +242,8 @@ def replace_resource_path(matchObj, target_dir='', origin_name=True):
 def replace_inner_source_file_path(matchObj):
     return replace_resource_path(matchObj, inner_files['css']['dir'], on_save_basename)
 
-def getCodeStr(result, target_charset='gbk'):
+# convert encoding
+def getCodeStr(result, target_charset='utf-8'):
     #gb2312
     try:
         myResult = result.decode('gb2312').encode(target_charset, 'ignore')

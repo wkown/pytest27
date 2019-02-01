@@ -86,10 +86,18 @@ def real_url(uri, base_url=''):
         print e
         if not isinstance(uri,'unicode'):
             return real_url(getCodeStr(uri,'utf-8').decode('utf-8'), base_url)
-        return ''
 
-
-
+    try:
+        if uri == '.' or not uri:
+            uri = base_url
+        elif uri[0] == '/':
+            uri = root_path + uri
+        else:
+            uri = base_url + '/' + uri
+    except Exception, e:
+        log(e)
+        return real_url(getCodeStr(uri, 'utf-8').decode('utf-8'), base_url)
+    return uri
 
 
 def download_files(file_list, dir, base_url='', origin_name=True):
@@ -145,6 +153,9 @@ def download_file(filename, target_url, base_url=''):
     target_url = target_url.strip().replace('\'', '').replace('"', '')
     target_url = real_url(target_url, base_url)
 
+    if not target_url:
+        return
+
     print "download: %s \n" % target_url
     file_put_contents(filename, file_get_contents(target_url))
 
@@ -174,7 +185,7 @@ def file_get_contents(url):
     """
     if url.find('http://') != -1 or url.find('https://') != -1:
         try:
-            req = urllib2.Request(url,None,{'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0'})
+            req = urllib2.Request(url,None,{'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0'})
             return urllib2.urlopen(req).read()
             #return urllib.urlopen(url).read()
         except Exception, e:
@@ -183,7 +194,8 @@ def file_get_contents(url):
             log(msg)
             return None
 
-    url = target_root_dir + '/' + url
+    if not os.path.isfile(url):
+        url = target_root_dir + '/' + url
     if not os.path.isfile(url):
         return
     f = open(url, 'rb')
@@ -244,7 +256,8 @@ def replace_resource_path(matchObj, target_dir='', origin_name=True):
 def replace_inner_source_file_path(matchObj):
     return replace_resource_path(matchObj, inner_files['css']['dir'], on_save_basename)
 
-def getCodeStr(result, target_charset='gbk'):
+# convert encoding
+def getCodeStr(result, target_charset='utf-8'):
     #gb2312
     try:
         myResult = result.decode('gb2312').encode(target_charset, 'ignore')

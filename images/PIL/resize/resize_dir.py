@@ -21,6 +21,7 @@ def scan_dir(rootDir):
 if __name__ == "__main__":
 
     rootDir = raw_input("Dir include photos: ")
+    ratio = raw_input("ratio:")
 
     targetDir = "./pics"
     if not os.path.exists(targetDir):
@@ -37,5 +38,7 @@ if __name__ == "__main__":
         if im.width > 700:
             continue
         print "%s" % (im,)
-        im.resize((350, 525), Image.ANTIALIAS).save(targetFile, "JPEG", quality=55)
+        width = int(im.width/int(ratio))
+        height = int(im.height/int(ratio))
+        im.resize((width, height), Image.ANTIALIAS).save(targetFile, "JPEG", quality=60)
         count += 1

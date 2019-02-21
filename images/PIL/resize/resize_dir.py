@@ -21,12 +21,21 @@ def scan_dir(rootDir):
 if __name__ == "__main__":
 
     rootDir = raw_input("Dir include photos: ")
-    count=1
+
     targetDir = "./pics"
     if not os.path.exists(targetDir):
         os.mkdir(targetDir)
+
+
+    count = 1
+    while os.path.isfile("%s/pic_%04d.jpg" % (targetDir, count)):
+        count += 1
+
     for f in scan_dir(rootDir):
+        targetFile = "%s/pic_%04d.jpg" % (targetDir, count)
         im = Image.open(f)
+        if im.width > 700:
+            continue
         print "%s" % (im,)
-        im.resize((350, 525), Image.ANTIALIAS).save("%s/pic_%04d.jpg" % (targetDir, count), "JPEG", quality=55)
+        im.resize((350, 525), Image.ANTIALIAS).save(targetFile, "JPEG", quality=55)
         count += 1

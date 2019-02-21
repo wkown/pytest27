@@ -3,7 +3,7 @@ __author__ = 'walkskyer'
 """
 等比例缩放
 """
-import Image
+from PIL import Image
 import os
 
 if __name__ == "__main__":

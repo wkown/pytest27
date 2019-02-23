@@ -10,7 +10,7 @@ import urllib2
 import os
 from urlparse import urlparse
 import socket
-import sys
+import sys, getopt
 import time
 
 socket.setdefaulttimeout(30)
@@ -359,23 +359,47 @@ def run_download(url, base_url, base_name):
     #os.chdir('..')
     print os.getcwd()
 
+def usage():
+    print 'This tools is used to download one page from the online web site to your local host.It will download the page struct ,js,css And images.And powered by walkskyer ^_^'
+    print "usage:"
+    sys.exit()
+
 if __name__ == "__main__":
     # url = 'http://www.273.cn/mobile'
-    print 'This tools is used to download one page from the online web site to your local host.It will download the page struct ,js,css And images.And powered by walkskyer ^_^'
 
-    url = target_name = base_url = ''
-    if len(sys.argv) <= 1:
-        while len(url) <= 0:
-            url = raw_input('please input a url(*):')
+    url = base_url = ''
+    target_name = 'index.html'
 
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hu:t:b:l=", ["url=", "target-name=", "base-url=", "local-file="])
+    except getopt.GetoptError:
+        usage()
 
+    if not len(opts):
+        usage()
 
-    if len(sys.argv) <= 2:
-        target_name = raw_input('please input the target name (optional default:index.html):')
-
+    for opt, argv in opts:
+        if opt in ("-h"):
+            usage()
+        if opt in ("-u", "--url"):
+            url = argv
+        if opt in ("-t", "--target-name"):
+            target_name = argv
+        if opt in ("-b", "--base-url"):
+            base_url = argv
+        if opt in ("-l", "--local-file"):
+            url, base_url = argv, url
+    """
+        if len(sys.argv) <= 1:
+            while len(url) <= 0:
+                url = raw_input('please input a url(*):')
+    
+        if len(sys.argv) <= 2:
+            target_name = raw_input('please input the target name (optional default:index.html):')
+    """
     if os.path.isfile(getCodeStr(url)):
-        while len(base_url) <= 0:
-            base_url = raw_input('please input the resource root url (To locate the images,css or js file in this html file):')
+        """while len(base_url) <= 0:
+            base_url = raw_input('please input the resource root url (To locate the images,css or js file in this html file):')"""
 
         if base_url.find(r'://') == -1:
             base_url = 'http://%s' % base_url

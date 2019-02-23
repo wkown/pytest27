@@ -28,9 +28,10 @@ if __name__ == "__main__":
     ratio = 4
     targetDir = "./pics"
     count = 1
+    Override = 0
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hs:t:r:c:", ["src-dir=","target-dir=","ratio=","count="])
+        opts, args = getopt.getopt(sys.argv[1:], "hs:t:r:c:O", ["src-dir=","target-dir=","ratio=","count=","override"])
     except getopt.GetoptError:
         usage()
 
@@ -48,17 +49,18 @@ if __name__ == "__main__":
             ratio = arg
         if opt in ("-c", "--count"):
             count = int(arg)
+        if opt in ("-O","override"):
+            Override = 1
 
         if not srcDir:
             usage()
 
-
     if not os.path.exists(targetDir):
         os.mkdir(targetDir)
 
-
-    while os.path.isfile("%s/pic_%04d.jpg" % (targetDir, count)):
-        count += 1
+    if not Override:
+        while os.path.isfile("%s/pic_%04d.jpg" % (targetDir, count)):
+            count += 1
 
     for f in scan_dir(srcDir):
         targetFile = "%s/pic_%04d.jpg" % (targetDir, count)

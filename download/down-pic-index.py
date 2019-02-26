@@ -42,6 +42,8 @@ for i in xrange(start_index, end_index+1):
     pic = urllib.urlopen(url)
     filename = os.path.basename(url)
     path_file = "%s/%s" % (target_dir, filename)
+    if os.path.isfile(path_file):
+        continue
     with open(path_file, 'wb') as f:
         f.write(pic.read())
         f.close()

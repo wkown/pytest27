@@ -2,7 +2,7 @@
 __author__ = 'walkskyer'
 """
 """
-import urllib
+import requests
 import os, sys, getopt
 
 url_pattern = ''
@@ -38,13 +38,13 @@ if not os.path.isdir(target_dir):
 for i in xrange(start_index, end_index+1):
     url = url_pattern.replace('*', str(i))
     print url
-
-    pic = urllib.urlopen(url)
     filename = os.path.basename(url)
     path_file = "%s/%s" % (target_dir, filename)
     if os.path.isfile(path_file):
         continue
+
+    req = requests.get(url)
     with open(path_file, 'wb') as f:
-        f.write(pic.read())
+        f.write(req.content)
         f.close()
     print "%s:from:%s  to: %s" % (i,url, path_file)

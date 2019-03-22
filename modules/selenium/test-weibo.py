@@ -41,13 +41,18 @@ def get_content(url_info):
     except Exception, e:
         print e
         srcUrl = ''
-    content = browser.find_element_by_css_selector('.WB_editor_iframe_new').text
+    contentEle = browser.find_element_by_css_selector('.WB_editor_iframe_new')
+    content = contentEle.text
     print "org:%s|author:%s|time:%s|srcUrl:%s" % (org, author, time, srcUrl)
     print content
+    print "innerHTML:"
+    print contentEle.get_attribute('innerHTML')
+    print "outerHTML:"
+    print contentEle.get_attribute('outerHTML')
 
 
 for u in urls:
     get_content(u)
 
 
-#browser.quit()
+browser.quit()

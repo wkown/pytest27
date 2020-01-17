@@ -18,8 +18,8 @@ if __name__ == "__main__":
         try:
             db = dict(config.items('db%s' % i))
             filename = "%s_%s" % (db['db'], datetime)
-            cmd = "%smysqldump --opt -u %s --password=%s %s > %s/%s.sql" % (
-                cfg_common['mysqldump_path'], db['user'], db['pwd'], db['db'], cfg_common['path'], filename)
+            cmd = "%smysqldump --opt -h%s -u %s --password=%s %s > %s/%s.sql" % (
+                cfg_common['mysqldump_path'], db['host'], db['user'], db['pwd'], db['db'], cfg_common['path'], filename)
             #print cmd
             os.system(cmd)
         except Exception, e:
